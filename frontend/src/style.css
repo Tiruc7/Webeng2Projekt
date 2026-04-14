@@ -1,0 +1,74 @@
+:root {
+  --bg-app: #111827;
+  --bg-surface: #0f172a;
+  --bg-surface-2: #162033;
+  --border: #263247;
+
+  --text-1: #f8fafc;
+  --text-2: #dbe4f0;
+  --text-3: #9aa9be;
+
+  --accent-pink: #e11d8d;
+  --accent-pink-soft: rgba(225, 29, 141, 0.14);
+
+  --accent-blue: #2563eb;
+  --accent-blue-soft: rgba(37, 99, 235, 0.16);
+
+  --accent-cyan: #38bdf8;
+
+  --shadow-soft: 0 16px 36px rgba(0, 0, 0, 0.28);
+  --radius-xl: 24px;
+  --radius-lg: 18px;
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  color: var(--text-2);
+  background-color: var(--bg-app);
+  color-scheme: dark;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: #111827;
+  color: var(--text-2);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
