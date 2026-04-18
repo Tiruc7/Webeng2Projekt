@@ -41,7 +41,13 @@ onUnmounted(() => {
 
 <template>
   <div ref="menuRef" class="user-menu">
-    <button class="user-menu__trigger" type="button" @click.stop="toggleMenu">
+    <button
+      class="user-menu__trigger"
+      type="button"
+      :aria-expanded="isOpen"
+      aria-controls="user-menu-dropdown"
+      @click.stop="toggleMenu"
+    >
       <div class="user-menu__avatar">C</div>
 
       <div class="user-menu__text">
@@ -50,7 +56,7 @@ onUnmounted(() => {
       </div>
     </button>
 
-    <div v-if="isOpen" class="user-menu__dropdown">
+    <div v-if="isOpen" id="user-menu-dropdown" class="user-menu__dropdown" role="menu">
       <button
         v-for="item in menuItems"
         :key="item.id"
