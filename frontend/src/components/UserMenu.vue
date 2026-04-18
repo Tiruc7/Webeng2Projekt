@@ -62,6 +62,7 @@ onUnmounted(() => {
         :key="item.id"
         class="user-menu__button"
         type="button"
+        role="menuitem"
       >
         {{ item.label }}
       </button>
