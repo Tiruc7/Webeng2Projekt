@@ -20,6 +20,8 @@
   --radius-xl: 24px;
   --radius-lg: 18px;
 
+  --user-menu-offset: 280px;
+
   font-family:
     Inter,
     ui-sans-serif,

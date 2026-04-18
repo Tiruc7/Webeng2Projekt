@@ -1,6 +1,5 @@
 <script setup>
 import { computed, ref } from 'vue'
-import UserMenu from '../components/UserMenu.vue'
 import SearchBar from '../components/SearchBar.vue'
 import ConcertCard from '../components/ConcertCard.vue'
 import { mockConcerts } from '../data/mockConcerts'
@@ -66,8 +65,6 @@ function handleSelect(value) {
         </div>
       </section>
     </main>
-
-    <UserMenu />
   </div>
 </template>
 
@@ -79,14 +76,13 @@ function handleSelect(value) {
 
 .dashboard-main {
   padding: 2rem;
-  padding-right: 2rem;
   overflow-y: auto;
 }
 
 .hero {
   max-width: 1280px;
   margin: 0 auto 2rem;
-  padding-right: 280px;
+  padding-right: var(--user-menu-offset);
 }
 
 .hero__tag {

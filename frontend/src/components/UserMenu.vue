@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const isOpen = ref(false)
 const menuRef = ref(null)
 
@@ -18,6 +20,12 @@ function toggleMenu() {
 
 function closeMenu() {
   isOpen.value = false
+}
+
+function navigate(item) {
+  if (!item.routeName) return
+  router.push({ name: item.routeName })
+  closeMenu()
 }
 
 function handleClickOutside(event) {
@@ -61,8 +69,11 @@ onUnmounted(() => {
         v-for="item in menuItems"
         :key="item.id"
         class="user-menu__button"
+        :class="{ 'user-menu__button--disabled': !item.routeName }"
         type="button"
         role="menuitem"
+        :disabled="!item.routeName"
+        @click="navigate(item)"
       >
         {{ item.label }}
       </button>
@@ -167,6 +178,17 @@ onUnmounted(() => {
   transform: translateY(-1px);
   background: var(--accent-pink-soft);
   border-color: rgba(225, 29, 141, 0.5);
+}
+
+.user-menu__button--disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.user-menu__button--disabled:hover {
+  transform: none;
+  background: var(--bg-surface-2);
+  border-color: var(--border);
 }
 
 @media (max-width: 720px) {
