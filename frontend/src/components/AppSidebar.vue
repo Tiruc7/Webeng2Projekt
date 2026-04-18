@@ -1,6 +1,6 @@
 <script setup>
 const menuItems = [
-  { id: 1, label: 'Profile' },
+  { id: 1, label: 'History' },
   { id: 2, label: 'Saved Concerts' },
   { id: 3, label: 'Calendar Export' },
   { id: 4, label: 'Settings' },

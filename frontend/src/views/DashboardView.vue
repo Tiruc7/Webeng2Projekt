@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import AppSidebar from '../components/AppSidebar.vue'
+import UserMenu from '../components/UserMenu.vue'
 import SearchBar from '../components/SearchBar.vue'
 import ConcertCard from '../components/ConcertCard.vue'
 import { mockConcerts } from '../data/mockConcerts'
@@ -67,26 +67,26 @@ function handleSelect(value) {
       </section>
     </main>
 
-    <AppSidebar />
+    <UserMenu />
   </div>
 </template>
 
 <style scoped>
 .dashboard-layout {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 290px;
   background: var(--bg-app);
 }
 
 .dashboard-main {
-  padding: 2rem 2.25rem 2rem 2rem;
+  padding: 2rem;
+  padding-right: 2rem;
   overflow-y: auto;
 }
 
 .hero {
   max-width: 1280px;
   margin: 0 auto 2rem;
+  padding-right: 280px;
 }
 
 .hero__tag {
@@ -160,8 +160,10 @@ function handleSelect(value) {
 }
 
 @media (max-width: 980px) {
-  .dashboard-layout {
-    grid-template-columns: 1fr;
+  .hero {
+    padding-right: 0;
+    padding-top: 5rem;
   }
 }
+
 </style>
