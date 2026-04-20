@@ -24,7 +24,7 @@ public class TMQueryBuilder {
             url.append("&city=").append(encode(city));
         }
 
-        if (size > 0) {
+        if (size>0) {
             url.append("&size=").append(size);
         }
 

@@ -1,10 +1,13 @@
 package com.notif.backend.controller;
 
+import com.notif.backend.dto.ConcertDTO;
 import com.notif.backend.helper.TMService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class ConcertController {
@@ -24,4 +27,13 @@ public class ConcertController {
         return tmService.getRawConcerts(keyword, city, size);
     }
 
+    //Zweiter Endpunkt locahost.../api/concerts
+    @GetMapping("/api/concerts")
+    public List<ConcertDTO> getConcerts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String city,
+            @RequestParam(defaultValue = "3") int size
+    ) {
+        return tmService.getConcerts(keyword, city, size);
+    }
 }
