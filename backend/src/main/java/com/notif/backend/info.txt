@@ -1,0 +1,13 @@
+http://localhost:8080/api/concerts?keyword=metallica
+
+ConcertControlle nimmt zB die Anfrage oben entgegen, liest die Parameter (hier: keyword=metallica) und ruft TMService
+auf TMService hat Logik für Kommunikation mit TM, nutzt QueryBuilder um URL zu erstellen, führt den http-request aus
+und gibt antwort zurück TMQueryBuilder baut aus Parametern &API-Key gültige URL nach TM
+Aktuell bekommen wir rohe JSON als Antwort-> next Step: in DTO verpacken
+
+URl kann angpasst werden mit keyword, city, size (=anzahl der ergebnisse)
+
+Update: Wir haben aus der json raus komprimierte DTOs
+
+Was funktionieren sollte mit diesem Commit: Wenn ihr zB die url in Zeile 1 aufruft sollte eine gekürzte fassung mit
+den event infos rauskommen, noch keine anbindung an frontend/DB
