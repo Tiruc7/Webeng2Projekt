@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import keycloak from '../keycloak/keycloak.js'
 
 const router = useRouter()
 const isOpen = ref(false)
@@ -8,10 +9,10 @@ const menuRef = ref(null)
 
 const menuItems = [
   { id: 1, label: 'Dashboard', routeName: 'dashboard' },
-  { id: 2, label: 'Login', routeName: 'login' },
+  { id: 2, label: 'Login', action: 'login' },
   { id: 3, label: 'Admin Panel', routeName: 'admin' },
   { id: 4, label: 'Settings', routeName: null },
-  { id: 5, label: 'Logout', routeName: null },
+  { id: 5, label: 'Logout', action: 'logout' },
 ]
 
 function toggleMenu() {
@@ -22,7 +23,18 @@ function closeMenu() {
   isOpen.value = false
 }
 
+
+
 function navigate(item) {
+  if (item.action === 'login') {
+    keycloak.login()
+    return
+  }
+
+  if (item.action === 'logout') {
+    keycloak.logout({ redirectUri: window.location.origin })
+    return
+  }
   if (!item.routeName) return
   router.push({ name: item.routeName })
   closeMenu()
@@ -69,10 +81,10 @@ onUnmounted(() => {
         v-for="item in menuItems"
         :key="item.id"
         class="user-menu__button"
-        :class="{ 'user-menu__button--disabled': !item.routeName }"
+        :class="{ 'user-menu__button--disabled': !item.routeName && !item.action }"
         type="button"
         role="menuitem"
-        :disabled="!item.routeName"
+        :disabled="!item.routeName && !item.action"
         @click="navigate(item)"
       >
         {{ item.label }}
