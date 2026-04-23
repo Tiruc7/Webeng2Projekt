@@ -1,0 +1,4 @@
+Um keycloak zu starten einfach "docker compose up" in der cmd ausführen. Alles sollte aufgesetzt sein.
+Um keycloak selbst zu konfigurieren kann man über user:admin pass:admin unter localhost:8080 das admin panel öffnen. 
+Um änderungen zu pushen, in der realm setting, realm export auswählen, alles anhaken, und den export in den imports ordner setzen. 
+Um mit token das backend anzusprechen, secureFetch anwenden. 
