@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DashboardView from '../views/DashboardView.vue'
 import LoginView from '../views/LoginView.vue'
 import AdminPanelView from '../views/AdminPanelView.vue'
+import keycloak from '../keycloak/keycloak';
 
 const routes = [
   {
@@ -19,12 +20,27 @@ const routes = [
     path: '/admin',
     name: 'admin',
     component: AdminPanelView,
+    meta: { requiresAuth: true }
   },
 ]
 
+
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes
+})
+
+router.beforeEach((to, _from, next) => {
+  if (to.meta.requiresAuth) {
+    //could use a store like piana instead
+    if (keycloak && keycloak.authenticated) {
+      next()
+    } else {
+      keycloak.login()
+    }
+  } else {
+    next()
+  }
 })
 
 export default router
