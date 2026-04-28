@@ -1,7 +1,7 @@
 package com.notif.backend.helper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.notif.backend.dto.ConcertDTO;
+import com.notif.backend.dto.EventDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,20 +28,20 @@ public class TMService {
         this.tmQueryBuilder = tmQueryBuilder;
     }
 
-    public String getRawConcerts(String keyword, String city, int size) {
+    public String getRawEvents(String keyword, String city, int size) {
         String url = tmQueryBuilder.buildSearchUrl(baseUrl, apiKey, keyword, city, size);
         System.out.println("Ticketmaster URL: " + url);
         return restTemplate.getForObject(url, String.class);
     }
 
-    public List<ConcertDTO> getConcerts(String keyword, String city, int size) {
+    public List<EventDTO> getEvents(String keyword, String city, int size) {
         //URL bauen mithilfe TMQueryBuilder Objekt
         String url = tmQueryBuilder.buildSearchUrl(baseUrl, apiKey, keyword, city, size);
         //RestTemplate sendet Request und nimmt Antwort zunächst als String in response
         String response = restTemplate.getForObject(url, String.class);
 
         //Liste für später einzelne ConcertDTOs
-        List<ConcertDTO> concerts = new ArrayList<>();
+        List<EventDTO> concerts = new ArrayList<>();
 
         try {
             JsonNode root = objectMapper.readTree(response);
@@ -75,7 +75,7 @@ public class TMService {
 
                     String ticketUrl = event.path("ticketUrl").asText("");
                     String status = event.path("status").asText("");
-                    concerts.add(new ConcertDTO(
+                    concerts.add(new EventDTO(
                             id,
                             title,
                             venue,

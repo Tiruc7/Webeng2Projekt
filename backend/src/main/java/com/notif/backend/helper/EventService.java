@@ -1,6 +1,6 @@
 package com.notif.backend.helper;
 
-import com.notif.backend.dto.ConcertDTO;
+import com.notif.backend.dto.EventDTO;
 import com.notif.backend.entity.Event;
 import com.notif.backend.repository.EventRepository;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class EventService {
         this.eventRepository = eventRepository;
     }
 
-    public Event saveOrUpdateConcert(ConcertDTO dto) {
+    public Event saveOrUpdateEvent(EventDTO dto) {
         Event event = eventRepository.findById(dto.id())
                 .orElse(new Event());
 
@@ -37,9 +37,9 @@ public class EventService {
         return eventRepository.findAll();
     }
 
-    public List<Event> saveOrUpdateConcerts(List<ConcertDTO> concertDTOs) {
-        return concertDTOs.stream()
-                .map(this::saveOrUpdateConcert)
+    public List<Event> saveOrUpdateEvent(List<EventDTO> eventDTOS) {
+        return eventDTOS.stream()
+                .map(this::saveOrUpdateEvent)
                 .toList();
     }
 }

@@ -1,5 +1,5 @@
 package com.notif.backend.dto;
-public record ConcertDTO(
+public record EventDTO(
         String id,
         String title,
         String venue,
