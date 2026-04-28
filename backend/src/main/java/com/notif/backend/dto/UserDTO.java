@@ -1,7 +1,8 @@
 package com.notif.backend.dto;
 
 public record UserDTO(
-        String id,
-        String username
+        Long id,
+        String username,
+        String external_id
 ) {
 }
