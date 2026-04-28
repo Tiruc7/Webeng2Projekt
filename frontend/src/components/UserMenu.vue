@@ -1,19 +1,42 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import keycloak from '../keycloak/keycloak.js'
+import { authState } from '../auth/authState.js'
 
 const router = useRouter()
 const isOpen = ref(false)
 const menuRef = ref(null)
 
-const menuItems = [
-  { id: 1, label: 'Dashboard', routeName: 'dashboard' },
-  { id: 2, label: 'Login', action: 'login' },
-  { id: 3, label: 'Admin Panel', routeName: 'admin' },
-  { id: 4, label: 'Settings', routeName: null },
-  { id: 5, label: 'Logout', action: 'logout' },
-]
+const menuItems = computed(() => {
+  const items = [
+    { id: 1, label: 'Dashboard', routeName: 'dashboard' },
+  ]
+
+  if (authState.authenticated) {
+    if (authState.isAdmin) {
+      items.push({ id: 3, label: 'Admin Panel', routeName: 'admin' })
+    }
+
+    items.push({ id: 5, label: 'Logout', action: 'logout' })
+  } else {
+    items.push({ id: 2, label: 'Login', action: 'login' })
+  }
+
+  return items
+})
+
+const displayName = computed(() => {
+  return authState.authenticated ? authState.username : 'Not logged in'
+})
+
+const avatarLetter = computed(() => {
+  if (!authState.authenticated || !authState.username) {
+    return 'C'
+  }
+
+  return authState.username.charAt(0).toUpperCase()
+})
 
 function toggleMenu() {
   isOpen.value = !isOpen.value
@@ -23,27 +46,30 @@ function closeMenu() {
   isOpen.value = false
 }
 
-
-
-function navigate(item) {
+async function navigate(item) {
   if (item.action === 'login') {
-    keycloak.login()
+    await keycloak.login({ redirectUri: window.location.origin })
     return
   }
 
   if (item.action === 'logout') {
-    keycloak.logout({ redirectUri: window.location.origin })
+    authState.authenticated = false
+    authState.username = 'Not logged in'
+    authState.roles = []
+    authState.isAdmin = false
+
+    await keycloak.logout({ redirectUri: window.location.origin })
     return
   }
+
   if (!item.routeName) return
+
   router.push({ name: item.routeName })
   closeMenu()
 }
 
 function handleClickOutside(event) {
-  if (!menuRef.value) {
-    return
-  }
+  if (!menuRef.value) return
 
   if (!menuRef.value.contains(event.target)) {
     closeMenu()
@@ -68,11 +94,19 @@ onUnmounted(() => {
       aria-controls="user-menu-dropdown"
       @click.stop="toggleMenu"
     >
-      <div class="user-menu__avatar">C</div>
+      <div class="user-menu__avatar">{{ avatarLetter }}</div>
 
       <div class="user-menu__text">
         <span class="user-menu__title">ConcertOrganizer</span>
-        <span class="user-menu__subtitle">Demo User</span>
+        <span
+          class="user-menu__subtitle"
+          :class="{
+            'user-menu__subtitle--online': authState.authenticated,
+            'user-menu__subtitle--offline': !authState.authenticated
+          }"
+        >
+          {{ displayName }}
+        </span>
       </div>
     </button>
 
@@ -152,8 +186,15 @@ onUnmounted(() => {
 
 .user-menu__subtitle {
   margin-top: 0.2rem;
-  color: var(--text-3);
   font-size: 0.85rem;
+}
+
+.user-menu__subtitle--online {
+  color: #7dd3fc;
+}
+
+.user-menu__subtitle--offline {
+  color: var(--text-3);
 }
 
 .user-menu__dropdown {
