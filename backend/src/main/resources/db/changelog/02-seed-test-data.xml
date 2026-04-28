@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="02-seed-test-data" author="chatgpt">
+        <!-- 2 Testuser -->
+        <insert tableName="users">
+            <column name="id" valueNumeric="1"/>
+            <column name="username" value="alice"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="id" valueNumeric="2"/>
+            <column name="username" value="bob"/>
+        </insert>
+
+        <!-- 6 Testevents -->
+        <insert tableName="events">
+            <column name="id" valueNumeric="101"/>
+            <column name="name" value="Metallica Live in Berlin"/>
+        </insert>
+
+        <insert tableName="events">
+            <column name="id" valueNumeric="102"/>
+            <column name="name" value="Slipknot Night in Hamburg"/>
+        </insert>
+
+        <insert tableName="events">
+            <column name="id" valueNumeric="103"/>
+            <column name="name" value="Rammstein Stadium Show"/>
+        </insert>
+
+        <insert tableName="events">
+            <column name="id" valueNumeric="104"/>
+            <column name="name" value="Ghost Ritual Tour"/>
+        </insert>
+
+        <insert tableName="events">
+            <column name="id" valueNumeric="105"/>
+            <column name="name" value="Sabaton Arena Event"/>
+        </insert>
+
+        <insert tableName="events">
+            <column name="id" valueNumeric="106"/>
+            <column name="name" value="Electric Callboy Festival Slot"/>
+        </insert>
+
+        <!-- Alice bekommt 3 Events -->
+        <insert tableName="user_events">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="event_id" valueNumeric="101"/>
+        </insert>
+
+        <insert tableName="user_events">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="event_id" valueNumeric="102"/>
+        </insert>
+
+        <insert tableName="user_events">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="event_id" valueNumeric="103"/>
+        </insert>
+
+        <!-- Bob bekommt 3 Events -->
+        <insert tableName="user_events">
+            <column name="user_id" valueNumeric="2"/>
+            <column name="event_id" valueNumeric="104"/>
+        </insert>
+
+        <insert tableName="user_events">
+            <column name="user_id" valueNumeric="2"/>
+            <column name="event_id" valueNumeric="105"/>
+        </insert>
+
+        <insert tableName="user_events">
+            <column name="user_id" valueNumeric="2"/>
+            <column name="event_id" valueNumeric="106"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
