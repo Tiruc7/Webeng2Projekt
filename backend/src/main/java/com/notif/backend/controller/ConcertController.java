@@ -1,11 +1,10 @@
 package com.notif.backend.controller;
 
 import com.notif.backend.dto.ConcertDTO;
+import com.notif.backend.entity.Event;
+import com.notif.backend.helper.EventService;
 import com.notif.backend.helper.TMService;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -13,9 +12,11 @@ import java.util.List;
 public class ConcertController {
 
     private final TMService tmService;
+    private final EventService eventService;
 
-    public ConcertController(TMService tmService) {
+    public ConcertController(TMService tmService, EventService eventService) {
         this.tmService = tmService;
+        this.eventService = eventService;
     }
 
     @GetMapping("/api/concerts/raw")
@@ -36,4 +37,14 @@ public class ConcertController {
     ) {
         return tmService.getConcerts(keyword, city, size);
     }
+    @GetMapping("/api/concerts/sync")
+    public List<Event> syncConcertsFromTicketmaster(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String city,
+            @RequestParam(defaultValue = "3") int size
+    ) {
+        List<ConcertDTO> concerts = tmService.getConcerts(keyword, city, size);
+        return eventService.saveOrUpdateConcerts(concerts);
+    }
+
 }

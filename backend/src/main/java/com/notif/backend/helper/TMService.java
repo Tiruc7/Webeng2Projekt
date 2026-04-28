@@ -73,6 +73,8 @@ public class TMService {
                         cityName = firstVenue.path("city").path("name").asText("");
                     }
 
+                    String ticketUrl = event.path("ticketUrl").asText("");
+                    String status = event.path("status").asText("");
                     concerts.add(new ConcertDTO(
                             id,
                             title,
@@ -80,7 +82,9 @@ public class TMService {
                             cityName,
                             date,
                             time,
-                            imageUrl
+                            imageUrl,
+                            ticketUrl,
+                            status
                     ));
                 }
             }
