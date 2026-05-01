@@ -3,7 +3,6 @@ package com.notif.backend.controller;
 import com.notif.backend.dto.UserEventRowDTO;
 import com.notif.backend.entity.AppUser;
 import com.notif.backend.entity.Event;
-import com.notif.backend.repository.AppUserRepository;
 import com.notif.backend.repository.EventRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;

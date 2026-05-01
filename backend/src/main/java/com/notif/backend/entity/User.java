@@ -4,6 +4,8 @@ package com.notif.backend.entity;
 import com.notif.backend.dto.UserDTO;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -16,6 +18,9 @@ public class User {
 
     @Column(name = "username")
     private String userName;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<UserEvent> userEvents;
 
     public User(){};
 
@@ -47,6 +52,14 @@ public class User {
 
     public void setExternal_id(String external_id) {
         this.external_id = external_id;
+    }
+
+    public List<UserEvent> getUserEvents() {
+        return userEvents;
+    }
+
+    public void setUserEvents(List<UserEvent> userEvents) {
+        this.userEvents = userEvents;
     }
 
     public UserDTO toDTO() {
