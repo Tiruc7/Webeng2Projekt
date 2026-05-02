@@ -26,6 +26,8 @@
 
     <changeSet id="3" author="Kat">
         <createTable tableName="user_events">
+            <column name="id" type="VARCHAR(255)"> <constraints primaryKey="true" nullable="false"/>
+            </column>
             <column name="user_id" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="fk_user" referencedTableName="users" referencedColumnNames="id"/>
             </column>

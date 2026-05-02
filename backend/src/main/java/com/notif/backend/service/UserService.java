@@ -27,4 +27,8 @@ public class UserService {
     public void deleteUserData(Long id) {
         userRepository.deleteById(id);
     }
+
+    public List<UserDTO> getUserEvents() {
+        return userRepository.findAll().stream().map(User::toDTO).toList();
+    }
 }

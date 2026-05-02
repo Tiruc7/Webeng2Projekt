@@ -2,8 +2,8 @@ package com.notif.backend.controller;
 
 import com.notif.backend.dto.EventDTO;
 import com.notif.backend.entity.Event;
-import com.notif.backend.helper.EventService;
-import com.notif.backend.helper.TMService;
+import com.notif.backend.service.EventService;
+import com.notif.backend.service.TMService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -1,6 +1,7 @@
 package com.notif.backend.controller;
 
 import com.notif.backend.dto.UserDTO;
+import com.notif.backend.dto.UserEventRowDTO;
 import com.notif.backend.entity.User;
 import com.notif.backend.service.UserService;
 import org.springframework.http.HttpStatusCode;
@@ -13,6 +14,7 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
+    private U
 
     public UserController(UserService userService){
         this.userService = userService;
@@ -45,5 +47,10 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatusCode.valueOf(500));
         }
+    }
+
+    @GetMapping("/user-events")
+    public List<UserEventRowDTO> getUserEvents() {
+        return
     }
 }

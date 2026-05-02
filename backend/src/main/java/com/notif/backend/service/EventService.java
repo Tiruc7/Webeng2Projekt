@@ -1,4 +1,4 @@
-package com.notif.backend.helper;
+package com.notif.backend.service;
 
 import com.notif.backend.dto.EventDTO;
 import com.notif.backend.entity.Event;
