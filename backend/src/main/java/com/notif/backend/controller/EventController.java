@@ -28,7 +28,6 @@ public class EventController {
         return tmService.getRawEvents(keyword, city, size);
     }
 
-    //Zweiter Endpunkt locahost.../api/concerts
     @GetMapping("/api/events")
     public List<EventDTO> getEvents(
             @RequestParam(required = false) String keyword,
