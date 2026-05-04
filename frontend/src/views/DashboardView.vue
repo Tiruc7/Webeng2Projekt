@@ -1,10 +1,11 @@
 <script setup>
 import { computed, ref } from 'vue'
-import SearchBar from '../components/SearchBar.vue'
+import EventSearchPanel from '../components/EventSearchPanel.vue'
 import ConcertCard from '../components/ConcertCard.vue'
 import { mockConcerts } from '../data/mockConcerts'
 
 const concerts = ref(mockConcerts)
+const lastSubmittedSearch = ref(null)
 
 const apiSearchQuery = ref('')
 const selectedSuggestion = ref('')
@@ -17,8 +18,9 @@ const apiSuggestions = computed(() => [
   'Lorna Shore',
 ])
 
-function handleSearch(value) {
-  apiSearchQuery.value = value
+function handleSearch(payload) {
+  lastSubmittedSearch.value = payload
+  console.log('Phase 1 search payload:', payload)
 }
 
 function handleSelect(value) {
@@ -28,44 +30,29 @@ function handleSelect(value) {
 </script>
 
 <template>
-  <div class="dashboard-layout">
-    <main class="dashboard-main">
-      <header class="hero">
-        <p class="hero__tag">CONCERT DASHBOARD</p>
-        <h1>Your saved events at a glance</h1>
-        <p class="hero__text">
-          Search for new concerts via the future API search and keep your saved events below.
-        </p>
+  <section class="dashboard">
+    <EventSearchPanel
+      :seed-suggestions="concerts"
+      @search="handleSearch"
+    />
 
-        <SearchBar
-          :suggestions="apiSuggestions"
-          @search="handleSearch"
-          @select="handleSelect"
-        />
+    <div v-if="lastSubmittedSearch" class="submitted-search-box">
+      <h3>Last submitted search</h3>
+      <p><strong>Keyword:</strong> {{ lastSubmittedSearch.keyword }}</p>
+      <p><strong>City:</strong> {{ lastSubmittedSearch.city || '—' }}</p>
+      <p><strong>Date from:</strong> {{ lastSubmittedSearch.dateFrom || '—' }}</p>
+      <p><strong>Date to:</strong> {{ lastSubmittedSearch.dateTo || '—' }}</p>
+      <p><strong>Size:</strong> {{ lastSubmittedSearch.size }}</p>
+    </div>
 
-        <p class="search-info">
-          API search preview:
-          <span v-if="apiSearchQuery">{{ apiSearchQuery }}</span>
-          <span v-else>nothing entered yet</span>
-        </p>
-      </header>
-
-      <section class="concert-section">
-        <div class="concert-section__top">
-          <h2>Saved concerts</h2>
-          <span>{{ concerts.length }} items</span>
-        </div>
-
-        <div class="concert-grid">
-          <ConcertCard
-            v-for="concert in concerts"
-            :key="concert.id"
-            :concert="concert"
-          />
-        </div>
-      </section>
-    </main>
-  </div>
+    <div class="concert-grid">
+      <ConcertCard
+        v-for="concert in concerts"
+        :key="concert.title + concert.venue"
+        :concert="concert"
+      />
+    </div>
+  </section>
 </template>
 
 <style scoped>
@@ -160,6 +147,19 @@ function handleSelect(value) {
     padding-right: 0;
     padding-top: 5rem;
   }
+}
+<style scoped>
+.submitted-search-box {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.82);
+  color: var(--text-1);
+}
+
+.submitted-search-box h3 {
+  margin-top: 0;
 }
 
 </style>
