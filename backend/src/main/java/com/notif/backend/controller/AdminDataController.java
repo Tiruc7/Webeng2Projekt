@@ -1,5 +1,6 @@
 package com.notif.backend.controller;
 
+import com.notif.backend.dto.EventDTO;
 import com.notif.backend.dto.UserDTO;
 import com.notif.backend.dto.UserEventDTO;
 import com.notif.backend.service.EventService;
@@ -42,5 +43,10 @@ public class AdminDataController {
     @GetMapping("/user-events")
     public List<UserEventDTO> getUserEvents() {
         return userEventService.getUserEventsByUser();
+    }
+
+    @GetMapping("/events")
+    public List<EventDTO> getSavedEvents() {
+        return eventService.getAllEvents();
     }
 }
