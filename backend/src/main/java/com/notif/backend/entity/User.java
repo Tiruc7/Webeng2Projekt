@@ -14,7 +14,7 @@ public class User {
     private Long id;
 
     @Column(name = "external_id")
-    private String external_id;
+    private String externalId;
 
     @Column(name = "username")
     private String userName;
@@ -26,7 +26,7 @@ public class User {
 
     public User(UserDTO user) {
         this.id = user.id();
-        this.external_id = user.external_id();
+        this.externalId = user.external_id();
         this.userName = user.username();
     }
 
@@ -46,12 +46,12 @@ public class User {
         this.userName = userName;
     }
 
-    public String getExternal_id() {
-        return external_id;
+    public String getExternalId() {
+        return externalId;
     }
 
-    public void setExternal_id(String external_id) {
-        this.external_id = external_id;
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public List<UserEvent> getUserEvents() {
@@ -63,6 +63,7 @@ public class User {
     }
 
     public UserDTO toDTO() {
-        return new UserDTO(this.id,this.userName,this.external_id);
+        return new UserDTO(this.id,this.userName,this.externalId);
     }
+
 }

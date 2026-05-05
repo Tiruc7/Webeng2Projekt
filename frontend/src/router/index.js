@@ -4,6 +4,7 @@ import DashboardView from '../views/DashboardView.vue'
 import LoginView from '../views/LoginView.vue'
 import AdminPanelView from '../views/AdminPanelView.vue'
 import keycloak from '../keycloak/keycloak';
+import ProfilePlaceholder from '../views/ProfilePlaceholder.vue';
 
 const routes = [
   {
@@ -20,6 +21,12 @@ const routes = [
     path: '/admin',
     name: 'admin',
     component: AdminPanelView,
+    meta: { requiresAuth: true }
+  },
+    {
+    path: '/profile',
+    name: 'profile',
+    component: ProfilePlaceholder,
     meta: { requiresAuth: true }
   },
 ]

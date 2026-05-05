@@ -7,6 +7,8 @@ import com.notif.backend.service.UserService;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,6 +54,13 @@ public class UserController {
     @GetMapping("/profile/{userId}")
     public UserDTO getUserProfile(@PathVariable Long userId) {
         return userService.getUserByID(userId);
+    }
+
+    @GetMapping("/sync")
+    public ResponseEntity<UserDTO> syncLogin(@AuthenticationPrincipal Jwt jwt) {
+        // Ruft den Service auf, der getOrCreateUser implementiert
+        UserDTO user = userService.getOrCreateUser(jwt);
+        return ResponseEntity.ok(user);
     }
 
 }

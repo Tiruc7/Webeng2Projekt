@@ -1,5 +1,6 @@
 import { reactive } from 'vue'
 import keycloak from '../keycloak/keycloak'
+import { secureFetch } from '../api/api.js'
 
 export const authState = reactive({
   initialized: false,
@@ -7,6 +8,7 @@ export const authState = reactive({
   username: 'Not logged in',
   roles: [],
   isAdmin: false,
+  userId: null,
 })
 
 export async function syncAuthState() {
@@ -17,6 +19,7 @@ export async function syncAuthState() {
     authState.username = 'Not logged in'
     authState.roles = []
     authState.isAdmin = false
+    authState.userId = null
     return
   }
 
@@ -31,6 +34,16 @@ export async function syncAuthState() {
   const realmRoles = parsed.realm_access?.roles ?? []
   authState.roles = realmRoles
   authState.isAdmin = realmRoles.includes('ADMIN')
+
+  try {
+      const response = await secureFetch('/api/user/sync')
+      const userData = await response.json()
+      if(authState.userId == null){
+        authState.userId = userData.id
+      }
+    } catch (error) {
+      console.error('Failed to sync user with backend', error)
+    }
 
   if (authState.username === 'Logged in') {
     try {
