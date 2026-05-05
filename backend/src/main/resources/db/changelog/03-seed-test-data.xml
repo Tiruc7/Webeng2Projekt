@@ -11,11 +11,13 @@
         <insert tableName="users">
             <column name="id" valueNumeric="1"/>
             <column name="username" value="alice"/>
+            <column name="external_id" value="dummy-uuid-alice-123"/>
         </insert>
 
         <insert tableName="users">
             <column name="id" valueNumeric="2"/>
             <column name="username" value="bob"/>
+            <column name="external_id" value="dummy-uuid-bob-123"/>
         </insert>
 
         <!-- 6 Testevents -->
@@ -51,32 +53,38 @@
 
         <!-- Alice bekommt 3 Events -->
         <insert tableName="user_events">
+            <column name="id" valueNumeric="1"/>
             <column name="user_id" valueNumeric="1"/>
             <column name="event_id" valueNumeric="101"/>
         </insert>
 
         <insert tableName="user_events">
+            <column name="id" valueNumeric="2"/>
             <column name="user_id" valueNumeric="1"/>
             <column name="event_id" valueNumeric="102"/>
         </insert>
 
         <insert tableName="user_events">
+            <column name="id" valueNumeric="3"/>
             <column name="user_id" valueNumeric="1"/>
             <column name="event_id" valueNumeric="103"/>
         </insert>
 
         <!-- Bob bekommt 3 Events -->
         <insert tableName="user_events">
+            <column name="id" valueNumeric="4"/>
             <column name="user_id" valueNumeric="2"/>
             <column name="event_id" valueNumeric="104"/>
         </insert>
 
         <insert tableName="user_events">
+            <column name="id" valueNumeric="5"/>
             <column name="user_id" valueNumeric="2"/>
             <column name="event_id" valueNumeric="105"/>
         </insert>
 
         <insert tableName="user_events">
+            <column name="id" valueNumeric="6"/>
             <column name="user_id" valueNumeric="2"/>
             <column name="event_id" valueNumeric="106"/>
         </insert>

@@ -4,7 +4,7 @@ import com.notif.backend.dto.UserEventDTO;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user_event")
+@Table(name = "user_events")
 public class UserEvent {
 
     @Id
