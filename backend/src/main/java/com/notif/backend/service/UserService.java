@@ -1,5 +1,6 @@
 package com.notif.backend.service;
 
+import com.notif.backend.dto.EventDTO;
 import com.notif.backend.dto.UserDTO;
 import com.notif.backend.dto.UserEventDTO;
 import com.notif.backend.entity.User;
@@ -36,4 +37,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public UserDTO getUserByID(Long userId) {
+        return userRepository.getReferenceById(userId).toDTO();
+    }
 }

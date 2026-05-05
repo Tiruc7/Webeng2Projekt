@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/user")
+@PreAuthorize("hasRole('USER')")
 public class UserController {
 
     private final UserService userService;
@@ -22,7 +24,7 @@ public class UserController {
         this.userEventService = userEventService;
     }
 
-    @PutMapping(value = "/user")
+    @PutMapping(value = "/profile")
     public ResponseEntity<UserDTO> updateUserData(@RequestBody UserDTO userDto) {
         try {
             UserDTO updated = userService.updateUserData(userDto);
@@ -32,7 +34,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping(value = "/user")
+    @DeleteMapping(value = "/profile")
     public ResponseEntity updateUserData(@RequestParam(value = "userId") Long userId) {
         try {
             userService.deleteUserData(userId);
@@ -43,9 +45,13 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/events")
-    @PreAuthorize("hasRole('USER')")
     public List<EventDTO> getEventsForUser(@PathVariable Long userId) {
         return userEventService.getEventsForUser(userId);
+    }
+
+    @GetMapping("/profile/{userId}")
+    public UserDTO getUserProfile(@PathVariable Long userId) {
+        return userService.getUserByID(userId);
     }
 
 }
