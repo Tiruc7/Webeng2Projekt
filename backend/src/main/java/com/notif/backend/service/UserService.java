@@ -7,6 +7,7 @@ import com.notif.backend.entity.UserEvent;
 import com.notif.backend.repository.UserEventRepository;
 import com.notif.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,10 +26,12 @@ public class UserService {
         return userRepository.findAll().stream().map(User::toDTO).toList();
     }
 
+    @Transactional
     public UserDTO updateUserData(UserDTO user) {
         return userRepository.save(new User(user)).toDTO();
     }
 
+    @Transactional
     public void deleteUserData(Long id) {
         userRepository.deleteById(id);
     }

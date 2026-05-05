@@ -7,6 +7,7 @@ import com.notif.backend.entity.UserEvent;
 import com.notif.backend.repository.EventRepository;
 import com.notif.backend.repository.UserEventRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class EventService {
         this.userEventRepository = userEventRepository;
     }
 
+    @Transactional
     public Event saveOrUpdateEvent(EventDTO dto) {
         Event event = eventRepository.findById(dto.id())
                 .orElse(new Event());
@@ -43,6 +45,7 @@ public class EventService {
         return eventRepository.findAll().stream().map(Event::toDTO).toList();
     }
 
+    @Transactional
     public List<Event> saveOrUpdateEvent(List<EventDTO> eventDTOS) {
         return eventDTOS.stream()
                 .map(this::saveOrUpdateEvent)
