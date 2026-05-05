@@ -1,11 +1,12 @@
 package com.notif.backend.controller;
 
+import com.notif.backend.dto.EventDTO;
 import com.notif.backend.dto.UserDTO;
-import com.notif.backend.dto.UserEventRowDTO;
-import com.notif.backend.entity.User;
+import com.notif.backend.service.UserEventService;
 import com.notif.backend.service.UserService;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,20 +14,12 @@ import java.util.List;
 @RestController
 public class UserController {
 
-    private UserService userService;
-    private U
+    private final UserService userService;
+    private final UserEventService userEventService;
 
-    public UserController(UserService userService){
+    public UserController(UserService userService, UserEventService userEventService){
         this.userService = userService;
-    }
-
-    @GetMapping(value = "/api/users")
-    public ResponseEntity<List<UserDTO>> getUserData() {
-        try {
-            return new ResponseEntity<>(userService.getUserData(), HttpStatusCode.valueOf(200));
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(500));
-        }
+        this.userEventService = userEventService;
     }
 
     @PutMapping(value = "/user")
@@ -49,8 +42,10 @@ public class UserController {
         }
     }
 
-    @GetMapping("/user-events")
-    public List<UserEventRowDTO> getUserEvents() {
-        return
+    @GetMapping("/{userId}/events")
+    @PreAuthorize("hasRole('USER')")
+    public List<EventDTO> getEventsForUser(@PathVariable Long userId) {
+        return userEventService.getEventsForUser(userId);
     }
+
 }

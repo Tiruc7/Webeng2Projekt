@@ -1,5 +1,6 @@
 package com.notif.backend.entity;
 
+import com.notif.backend.dto.UserEventDTO;
 import jakarta.persistence.*;
 
 @Entity
@@ -7,8 +8,7 @@ import jakarta.persistence.*;
 public class UserEvent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -21,7 +21,7 @@ public class UserEvent {
     // Optional: Hier könnten weitere Felder stehen
     // private LocalDateTime joinedAt;
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
@@ -33,7 +33,7 @@ public class UserEvent {
         return event;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -43,5 +43,9 @@ public class UserEvent {
 
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    public UserEventDTO toDTO(){
+        return new UserEventDTO(id,user.toDTO(),event.toDTO());
     }
 }

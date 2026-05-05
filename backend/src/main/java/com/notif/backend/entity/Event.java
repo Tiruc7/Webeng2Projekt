@@ -1,5 +1,6 @@
 package com.notif.backend.entity;
 
+import com.notif.backend.dto.EventDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -113,4 +114,10 @@ public class Event {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public EventDTO toDTO(){
+        return new EventDTO(id, name, venue, city, date, time,
+                imageUrl, ticketUrl, status);
+    }
+
 }

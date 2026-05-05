@@ -1,10 +1,13 @@
 package com.notif.backend.controller;
 
-import com.notif.backend.dto.UserEventRowDTO;
-import com.notif.backend.entity.AppUser;
-import com.notif.backend.entity.Event;
-import com.notif.backend.repository.EventRepository;
-import org.springframework.jdbc.core.JdbcTemplate;
+import com.notif.backend.dto.UserDTO;
+import com.notif.backend.dto.UserEventDTO;
+import com.notif.backend.service.EventService;
+import com.notif.backend.service.UserEventService;
+import com.notif.backend.service.UserService;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,40 +16,31 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
+@PreAuthorize("!hasRole('USER')")
 public class AdminDataController {
 
-    private final AppUserRepository appUserRepository;
-    private final EventRepository eventRepository;
-    private final JdbcTemplate jdbcTemplate;
+    private final UserEventService userEventService;
+    private final EventService eventService;
+    private final UserService userService;
 
-    public AdminDataController(
-            AppUserRepository appUserRepository,
-            EventRepository eventRepository,
-            JdbcTemplate jdbcTemplate
-    ) {
-        this.appUserRepository = appUserRepository;
-        this.eventRepository = eventRepository;
-        this.jdbcTemplate = jdbcTemplate;
+    public AdminDataController(UserEventService userEventService, EventService eventService, UserService userService) {
+
+        this.userEventService = userEventService;
+        this.eventService = eventService;
+        this.userService = userService;
     }
 
-    @GetMapping("/users")
-    public List<AppUser> getUsers() {
-        return appUserRepository.findAll();
-    }
-
-    @GetMapping("/events")
-    public List<Event> getEvents() {
-        return eventRepository.findAll();
+    @GetMapping(value = "/users")
+    public ResponseEntity<List<UserDTO>> getUserData() {
+        try {
+            return new ResponseEntity<>(userService.getUserData(), HttpStatusCode.valueOf(200));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatusCode.valueOf(500));
+        }
     }
 
     @GetMapping("/user-events")
-    public List<UserEventRowDTO> getUserEvents() {
-        return jdbcTemplate.query(
-                "SELECT user_id, event_id FROM user_events ORDER BY user_id, event_id",
-                (rs, rowNum) -> new UserEventRowDTO(
-                        rs.getString("user_id"),
-                        rs.getString("event_id")
-                )
-        );
+    public List<UserEventDTO> getUserEvents() {
+        return userEventService.getUserEventsByUser();
     }
 }
