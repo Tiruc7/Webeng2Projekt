@@ -16,7 +16,7 @@ async function loadProfile() {
   loading.value = true
   try {
     const userId = authState.userId;
-    const response = await secureFetch('/api/user/profile/' + userId)
+    const response = await secureFetch('/api/user/' + userId + '/profile')
     if (!response.ok) {
       throw new Error(`Profile could not be loaded (${response.status})`)
     }

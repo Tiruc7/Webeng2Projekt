@@ -26,7 +26,7 @@ public class UserController {
         this.userEventService = userEventService;
     }
 
-    @PutMapping(value = "/profile")
+    @PutMapping()
     public ResponseEntity<UserDTO> updateUserData(@RequestBody UserDTO userDto) {
         try {
             UserDTO updated = userService.updateUserData(userDto);
@@ -36,7 +36,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping(value = "/profile")
+    @DeleteMapping()
     public ResponseEntity updateUserData(@RequestParam(value = "userId") Long userId) {
         try {
             userService.deleteUserData(userId);
@@ -51,7 +51,7 @@ public class UserController {
         return userEventService.getEventsForUser(userId);
     }
 
-    @GetMapping("/profile/{userId}")
+    @GetMapping("/{userId}/profile")
     public UserDTO getUserProfile(@PathVariable Long userId) {
         return userService.getUserByID(userId);
     }
