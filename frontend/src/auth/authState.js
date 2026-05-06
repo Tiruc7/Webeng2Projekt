@@ -58,3 +58,4 @@ export async function syncAuthState() {
     }
   }
 }
+window.authState = authState;
