@@ -6,8 +6,11 @@
 
     <changeSet id="1" author="Kat">
         <createTable tableName="users">
-            <column name="id" type="VARCHAR(255)">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="external_id" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false"/>
             </column>
             <column name="username" type="VARCHAR(255)"/>
         </createTable>
@@ -23,7 +26,9 @@
 
     <changeSet id="3" author="Kat">
         <createTable tableName="user_events">
-            <column name="user_id" type="VARCHAR(255)">
+            <column name="id" type="VARCHAR(255)"> <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="fk_user" referencedTableName="users" referencedColumnNames="id"/>
             </column>
             <column name="event_id" type="VARCHAR(255)">

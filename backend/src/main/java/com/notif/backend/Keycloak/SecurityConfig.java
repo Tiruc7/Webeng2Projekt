@@ -32,7 +32,7 @@ public class SecurityConfig
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/user/**").hasRole("USER")
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admim/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

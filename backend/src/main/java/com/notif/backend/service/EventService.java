@@ -1,9 +1,13 @@
-package com.notif.backend.helper;
+package com.notif.backend.service;
 
 import com.notif.backend.dto.EventDTO;
+import com.notif.backend.dto.UserEventDTO;
 import com.notif.backend.entity.Event;
+import com.notif.backend.entity.UserEvent;
 import com.notif.backend.repository.EventRepository;
+import com.notif.backend.repository.UserEventRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,10 +16,14 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
-    public EventService(EventRepository eventRepository) {
+    private final UserEventRepository userEventRepository;
+
+    public EventService(EventRepository eventRepository, UserEventRepository userEventRepository) {
         this.eventRepository = eventRepository;
+        this.userEventRepository = userEventRepository;
     }
 
+    @Transactional
     public Event saveOrUpdateEvent(EventDTO dto) {
         Event event = eventRepository.findById(dto.id())
                 .orElse(new Event());
@@ -33,10 +41,11 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    public List<Event> getAllEvents() {
-        return eventRepository.findAll();
+    public List<EventDTO> getAllEvents() {
+        return eventRepository.findAll().stream().map(Event::toDTO).toList();
     }
 
+    @Transactional
     public List<Event> saveOrUpdateEvent(List<EventDTO> eventDTOS) {
         return eventDTOS.stream()
                 .map(this::saveOrUpdateEvent)

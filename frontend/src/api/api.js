@@ -5,7 +5,7 @@ export async function secureFetch(url, options = {}) {
   try {
     await keycloak.updateToken(30); //30s
   } catch (error) {
-    console.error("Session abgelaufen", error);
+    console.error("Session timed out", error);
     keycloak.login();
   }
 

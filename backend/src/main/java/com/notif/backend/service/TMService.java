@@ -1,10 +1,12 @@
-package com.notif.backend.helper;
+package com.notif.backend.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.notif.backend.dto.EventDTO;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.notif.backend.helper.TMQueryBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

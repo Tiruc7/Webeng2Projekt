@@ -19,6 +19,7 @@ const menuItems = computed(() => {
     }
 
     items.push({ id: 5, label: 'Logout', action: 'logout' })
+    items.push({ id: 6, label: 'Profile', routeName: 'profile' })
   } else {
     items.push({ id: 2, label: 'Login', action: 'login' })
   }

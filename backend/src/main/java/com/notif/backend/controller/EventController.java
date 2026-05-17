@@ -1,9 +1,12 @@
 package com.notif.backend.controller;
 
 import com.notif.backend.dto.EventDTO;
+import com.notif.backend.dto.UserDTO;
 import com.notif.backend.entity.Event;
-import com.notif.backend.helper.EventService;
-import com.notif.backend.helper.TMService;
+import com.notif.backend.service.EventService;
+import com.notif.backend.service.TMService;
+import com.notif.backend.service.UserEventService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,10 +16,12 @@ public class EventController {
 
     private final TMService tmService;
     private final EventService eventService;
+    private final UserEventService userEventService;
 
-    public EventController(TMService tmService, EventService eventService) {
+    public EventController(TMService tmService, EventService eventService, UserEventService userEventService) {
         this.tmService = tmService;
         this.eventService = eventService;
+        this.userEventService = userEventService;
     }
 
     @GetMapping("/api/events/raw")
@@ -43,7 +48,7 @@ public class EventController {
     }
 
     @GetMapping
-    public List<Event> getSavedEvents() {
+    public List<EventDTO> getSavedEvents() {
         return eventService.getAllEvents();
     }
 
@@ -55,5 +60,11 @@ public class EventController {
     ) {
         List<EventDTO> events = tmService.getEvents(keyword, city, size);
         return eventService.saveOrUpdateEvent(events);
+    }
+
+    @GetMapping("/{eventId}/users")
+    @PreAuthorize("!hasRole('USER')")
+    public List<UserDTO> getEventsForUser(@PathVariable String eventId) {
+        return userEventService.getUserForEvents(eventId);
     }
 }
