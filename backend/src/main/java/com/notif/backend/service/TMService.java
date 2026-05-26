@@ -1,4 +1,4 @@
-package com.notif.backend.helper;
+package com.notif.backend.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.notif.backend.dto.EventDTO;
@@ -7,12 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.notif.backend.dto.SearchSuggestionDTO;
+import com.notif.backend.helper.TMQueryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 public class TMService {
+
+    private static final Logger log = LoggerFactory.getLogger(TMService.class);
+
     @Value("${ticketmaster.api.base-url}")
     private String baseUrl;
 
@@ -36,8 +43,10 @@ public class TMService {
         return restTemplate.getForObject(url, String.class);
     }
 
-    public List<EventDTO> getEvents(String keyword, String city, int size) {
-        String url = tmQueryBuilder.buildSearchUrl(baseUrl, apiKey, keyword, city, size);
+    @Cacheable("events")
+    public List<EventDTO> getEvents(String keyword, String city, int size, String dateFrom, String dateTo) {
+        log.info("Ticketmaster API call: keyword={}, city={}, size={}, dateFrom={}, dateTo={}", keyword, city, size, dateFrom, dateTo);
+        String url = tmQueryBuilder.buildSearchUrl(baseUrl, apiKey, keyword, city, size, dateFrom, dateTo);
         String response = restTemplate.getForObject(url, String.class);
 
         List<EventDTO> concerts = new ArrayList<>();
@@ -91,8 +100,9 @@ public class TMService {
         return concerts;
     }
 
+    @Cacheable("suggestions")
     public List<SearchSuggestionDTO> searchSuggestions(String keyword, String city, int size) {
-        List<EventDTO> events = getEvents(keyword, city, size);
+        List<EventDTO> events = getEvents(keyword, city, size, null, null);
 
         return events.stream()
                 .map(event -> new SearchSuggestionDTO(

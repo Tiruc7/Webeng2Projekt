@@ -1,7 +1,8 @@
 package com.notif.backend.controller;
 
+import com.notif.backend.dto.EventDTO;
 import com.notif.backend.dto.SearchSuggestionDTO;
-import com.notif.backend.helper.TMService;
+import com.notif.backend.service.TMService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,7 +29,27 @@ public class SearchController {
         if (keyword == null || keyword.trim().length() < 3) {
             return Collections.emptyList();
         }
+        // Normalize: lowercase keyword + null for blank city -> consistent cache keys
+        String normalizedKeyword = keyword.trim().toLowerCase();
+        String normalizedCity = (city != null && !city.isBlank()) ? city.trim() : null;
 
-        return tmService.searchSuggestions(keyword.trim(), city, 5);
+        return tmService.searchSuggestions(normalizedKeyword, normalizedCity, 3);
+    }
+
+    @GetMapping("/events")
+    public List<EventDTO> searchEvents(
+            @RequestParam String keyword,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        if (keyword == null || keyword.trim().length() < 3) {
+            return Collections.emptyList();
+        }
+        String normalizedKeyword = keyword.trim().toLowerCase();
+        String normalizedCity = (city != null && !city.isBlank()) ? city.trim() : null;
+
+        return tmService.getEvents(normalizedKeyword, normalizedCity, size, dateFrom, dateTo);
     }
 }

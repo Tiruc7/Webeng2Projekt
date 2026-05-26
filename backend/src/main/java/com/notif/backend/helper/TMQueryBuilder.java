@@ -9,6 +9,11 @@ import java.nio.charset.StandardCharsets;
 public class TMQueryBuilder {
 
     public String buildSearchUrl(String baseUrl, String apiKey, String keyword, String city, int size) {
+        return buildSearchUrl(baseUrl, apiKey, keyword, city, size, null, null);
+    }
+
+    public String buildSearchUrl(String baseUrl, String apiKey, String keyword, String city, int size,
+                                  String dateFrom, String dateTo) {
         StringBuilder url = new StringBuilder();
 
         url.append(baseUrl)
@@ -24,8 +29,16 @@ public class TMQueryBuilder {
             url.append("&city=").append(encode(city));
         }
 
-        if (size>0) {
+        if (size > 0) {
             url.append("&size=").append(size);
+        }
+
+        if (dateFrom != null && !dateFrom.isBlank()) {
+            url.append("&startDateTime=").append(dateFrom).append("T00:00:00Z");
+        }
+
+        if (dateTo != null && !dateTo.isBlank()) {
+            url.append("&endDateTime=").append(dateTo).append("T23:59:59Z");
         }
 
         return url.toString();
