@@ -10,8 +10,10 @@ import com.notif.backend.dto.SearchSuggestionDTO;
 import com.notif.backend.helper.TMQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,12 +28,14 @@ public class TMService {
     @Value("${ticketmaster.api.key}")
     private String apiKey;
 
-    //Objekt was JSON lesen kann
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final TMQueryBuilder tmQueryBuilder;
 
     private final RestTemplate restTemplate = new RestTemplate();
+
+    @Autowired @Lazy
+    private TMService self;
 
     public TMService(TMQueryBuilder tmQueryBuilder) {
         this.tmQueryBuilder = tmQueryBuilder;
@@ -78,8 +82,8 @@ public class TMService {
                         cityName = firstVenue.path("city").path("name").asText("");
                     }
 
-                    String ticketUrl = event.path("ticketUrl").asText("");
-                    String status = event.path("status").asText("");
+                    String ticketUrl = event.path("url").asText("");
+                    String status = event.path("dates").path("status").path("code").asText("");
                     concerts.add(new EventDTO(
                             id,
                             title,
@@ -102,7 +106,7 @@ public class TMService {
 
     @Cacheable("suggestions")
     public List<SearchSuggestionDTO> searchSuggestions(String keyword, String city, int size) {
-        List<EventDTO> events = getEvents(keyword, city, size, null, null);
+        List<EventDTO> events = self.getEvents(keyword, city, size, null, null);
 
         return events.stream()
                 .map(event -> new SearchSuggestionDTO(
