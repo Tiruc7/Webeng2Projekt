@@ -62,6 +62,45 @@ public class UserEventService {
         return userEventRepository.save(connection).toDTO();
     }
 
+    @Transactional
+    public void removeEventFromUserProfile(Long userId, String eventId) {
+        userEventRepository.deleteByUserAndEvent(userId, eventId);
+        // Remove the event itself if no user has it saved anymore
+        if (!userEventRepository.existsByEvent_Id(eventId)) {
+            eventRepository.deleteById(eventId);
+        }
+    }
+
+    @Transactional
+    public void addEventToUserProfile(Long userId, com.notif.backend.dto.EventDTO eventDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        // Save event in DB if not yet existing (Upsert)
+        Event event = eventRepository.findById(eventDTO.id()).orElse(new Event());
+        event.setId(eventDTO.id());
+        event.setName(eventDTO.title());
+        event.setVenue(eventDTO.venue());
+        event.setCity(eventDTO.city());
+        event.setDate(eventDTO.date());
+        event.setTime(eventDTO.time());
+        event.setImageUrl(eventDTO.imageUrl());
+        event.setTicketUrl(eventDTO.ticketUrl());
+        event.setStatus(eventDTO.status());
+        event = eventRepository.save(event);
+
+        // No duplicate entries for same user-event combination
+        if (userEventRepository.existsByUser_IdAndEvent_Id(userId, event.getId())) {
+            return;
+        }
+
+        UserEvent connection = new UserEvent();
+        connection.setId(UUID.randomUUID().toString());
+        connection.setUser(user);
+        connection.setEvent(event);
+        userEventRepository.save(connection);
+    }
+
     public List<UserEventDTO> getUserEventsByUser() {
         return userEventRepository.findAllByOrderByUser_IdAscEvent_IdAsc().stream().map(UserEvent::toDTO).toList();
     }

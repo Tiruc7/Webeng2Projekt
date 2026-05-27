@@ -1,165 +1,157 @@
 <script setup>
-import { computed, ref } from 'vue'
-import SearchBar from '../components/SearchBar.vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import EventSearchPanel from '../components/EventSearchPanel.vue'
 import ConcertCard from '../components/ConcertCard.vue'
-import { mockConcerts } from '../data/mockConcerts'
+import { authState } from '../auth/authState.js'
+import { secureFetch } from '../api/api.js'
 
-const concerts = ref(mockConcerts)
+const route = useRoute()
+const router = useRouter()
 
-const apiSearchQuery = ref('')
-const selectedSuggestion = ref('')
+// Active tab is encoded in the URL as ?tab=saved so it survives page refresh
+const activeTab = computed(() => route.query.tab === 'saved' ? 'saved' : 'search')
 
-const apiSuggestions = computed(() => [
-  'Architects',
-  'Bring Me The Horizon',
-  'Sleep Token',
-  'Bad Omens',
-  'Lorna Shore',
-])
-
-function handleSearch(value) {
-  apiSearchQuery.value = value
+function setTab(tab) {
+  router.replace({ query: { tab } })
 }
 
-function handleSelect(value) {
-  selectedSuggestion.value = value
-  apiSearchQuery.value = value
+const concerts = ref([])
+
+const savedEventIds = computed(() => new Set(concerts.value.map(c => c.id)))
+
+async function loadSavedConcerts() {
+  if (!authState.authenticated) {
+    concerts.value = []
+    return
+  }
+  try {
+    const response = await secureFetch('/api/user/events')
+    if (response.ok) {
+      concerts.value = await response.json()
+    }
+  } catch (e) {
+    console.error('Failed to load saved concerts:', e)
+  }
 }
+
+function onConcertSaved() {
+  loadSavedConcerts()
+  setTab('saved')
+}
+
+async function deleteConcert(eventId) {
+  concerts.value = concerts.value.filter(c => c.id !== eventId)
+  try {
+    const response = await secureFetch(`/api/user/events/${eventId}`, { method: 'DELETE' })
+    if (!response.ok) throw new Error(`${response.status}`)
+  } catch (e) {
+    console.error('Failed to delete concert:', e)
+    loadSavedConcerts()
+  }
+}
+
+onMounted(loadSavedConcerts)
+
+watch(() => authState.authenticated, loadSavedConcerts)
 </script>
 
 <template>
-  <div class="dashboard-layout">
-    <main class="dashboard-main">
-      <header class="hero">
-        <p class="hero__tag">CONCERT DASHBOARD</p>
-        <h1>Your saved events at a glance</h1>
-        <p class="hero__text">
-          Search for new concerts via the future API search and keep your saved events below.
-        </p>
+  <section class="dashboard">
+    <nav class="tabs" role="tablist">
+      <button
+        role="tab"
+        class="tab"
+        :class="{ 'tab--active': activeTab === 'search' }"
+        :aria-selected="activeTab === 'search'"
+        @click="setTab('search')"
+      >
+        Search
+      </button>
+      <button
+        role="tab"
+        class="tab"
+        :class="{ 'tab--active': activeTab === 'saved' }"
+        :aria-selected="activeTab === 'saved'"
+        @click="setTab('saved')"
+      >
+        Saved concerts
+      </button>
+    </nav>
 
-        <SearchBar
-          :suggestions="apiSuggestions"
-          @search="handleSearch"
-          @select="handleSelect"
+    <div v-show="activeTab === 'search'" class="tab-panel">
+      <EventSearchPanel
+        :saved-event-ids="savedEventIds"
+        @concert-saved="onConcertSaved"
+      />
+    </div>
+
+    <div v-show="activeTab === 'saved'" class="tab-panel">
+      <div v-if="!authState.authenticated" class="empty-hint">
+        Log in to save concerts to your profile.
+      </div>
+      <div v-else-if="concerts.length > 0" class="concert-grid">
+        <ConcertCard
+          v-for="concert in concerts"
+          :key="concert.id"
+          :concert="concert"
+          @delete="deleteConcert"
         />
-
-        <p class="search-info">
-          API search preview:
-          <span v-if="apiSearchQuery">{{ apiSearchQuery }}</span>
-          <span v-else>nothing entered yet</span>
-        </p>
-      </header>
-
-      <section class="concert-section">
-        <div class="concert-section__top">
-          <h2>Saved concerts</h2>
-          <span>{{ concerts.length }} items</span>
-        </div>
-
-        <div class="concert-grid">
-          <ConcertCard
-            v-for="concert in concerts"
-            :key="concert.id"
-            :concert="concert"
-          />
-        </div>
-      </section>
-    </main>
-  </div>
+      </div>
+      <p v-else class="empty-hint">
+        No saved concerts yet. Search for something and hit "Save to profile".
+      </p>
+    </div>
+  </section>
 </template>
 
 <style scoped>
-.dashboard-layout {
-  min-height: 100vh;
-  background: var(--bg-app);
+.dashboard {
+  padding: 1.5rem;
 }
 
-.dashboard-main {
-  padding: 2rem;
-  overflow-y: auto;
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
 }
 
-.hero {
-  max-width: 1280px;
-  margin: 0 auto 2rem;
-  padding-right: var(--user-menu-offset);
-}
-
-.hero__tag {
-  display: inline-block;
-  margin: 0 0 0.75rem;
-  color: #f9a8d4;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-size: 0.88rem;
-}
-
-.hero h1 {
-  margin: 0 0 0.9rem;
-  color: var(--text-1);
-  font-size: clamp(2.8rem, 5vw, 4.8rem);
-  line-height: 1.02;
-  letter-spacing: -0.04em;
-  font-weight: 800;
-  max-width: 900px;
-}
-
-.hero__text {
-  margin: 0 0 1.5rem;
-  color: var(--text-3);
-  max-width: 760px;
-  line-height: 1.65;
-  font-size: 1.05rem;
-}
-
-.search-info {
-  margin: 0.95rem 0 0;
+.tab {
+  padding: 0.6rem 1.1rem;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
   color: var(--text-3);
   font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: -1px;
+  border-radius: 8px 8px 0 0;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
-.search-info span {
-  color: var(--accent-cyan);
-  font-weight: 700;
-}
-
-.concert-section {
-  max-width: 1280px;
-  margin: 0 auto;
-}
-
-.concert-section__top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.concert-section__top h2 {
+.tab:hover {
   color: var(--text-1);
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
 }
 
-.concert-section__top span {
-  color: var(--text-3);
-  font-weight: 500;
+.tab--active {
+  color: var(--text-1);
+  border-bottom-color: var(--accent-blue);
+}
+
+.tab-panel {
+  min-height: 200px;
 }
 
 .concert-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: 1.2rem;
 }
 
-@media (max-width: 980px) {
-  .hero {
-    padding-right: 0;
-    padding-top: 5rem;
-  }
+.empty-hint {
+  color: var(--text-3);
+  font-size: 0.95rem;
 }
-
 </style>
