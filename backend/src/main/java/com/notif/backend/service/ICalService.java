@@ -72,8 +72,14 @@ public class ICalService {
                 String[] parts = event.time().split(":");
                 int hour   = Integer.parseInt(parts[0]);
                 int minute = Integer.parseInt(parts[1]);
-                String dtStart = String.format("%sT%02d%02d00Z", dateFlat, hour, minute);
-                String dtEnd   = String.format("%sT%02d%02d00Z", dateFlat, (hour + 3) % 24, minute);
+
+                // Use LocalDateTime.plusHours so dates roll over correctly (e.g. 22:00 + 3h = 01:00 next day)
+                LocalDate date = LocalDate.parse(event.date());
+                LocalDateTime startDt = LocalDateTime.of(date, java.time.LocalTime.of(hour, minute));
+                LocalDateTime endDt   = startDt.plusHours(3);
+
+                String dtStart = startDt.format(DTSTAMP_FORMAT);
+                String dtEnd   = endDt.format(DTSTAMP_FORMAT);
                 return new String[]{dtStart, dtEnd};
             } catch (Exception ignored) {
             }
