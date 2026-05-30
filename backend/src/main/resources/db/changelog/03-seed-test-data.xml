@@ -95,31 +95,37 @@
 
     <changeSet id="03-03-seed-user-events" author="team" context="@dev">
         <insert tableName="user_events">
+            <column name="id" value="1"/>
             <column name="user_id" value="1"/>
             <column name="event_id" value="101"/>
         </insert>
 
         <insert tableName="user_events">
+            <column name="id" value="2"/>
             <column name="user_id" value="1"/>
             <column name="event_id" value="102"/>
         </insert>
 
         <insert tableName="user_events">
+            <column name="id" value="3"/>
             <column name="user_id" value="1"/>
             <column name="event_id" value="103"/>
         </insert>
 
         <insert tableName="user_events">
+            <column name="id" value="4"/>
             <column name="user_id" value="2"/>
             <column name="event_id" value="104"/>
         </insert>
 
         <insert tableName="user_events">
+            <column name="id" value="5"/>
             <column name="user_id" value="2"/>
             <column name="event_id" value="105"/>
         </insert>
 
         <insert tableName="user_events">
+            <column name="id" value="6"/>
             <column name="user_id" value="2"/>
             <column name="event_id" value="106"/>
         </insert>
