@@ -53,7 +53,7 @@ function closeDropdown() {
       @input="handleInput"
       @focus="isOpen = true"
       @blur="closeDropdown"
-      @keyup.enter="$emit('search', query)"
+      @keyup.enter="isOpen = false; $emit('search', query)"
     />
 
     <div
