@@ -2,10 +2,14 @@ package com.notif.backend.controller;
 
 import com.notif.backend.dto.EventDTO;
 import com.notif.backend.dto.UserDTO;
+import com.notif.backend.service.ICalService;
 import com.notif.backend.service.UserEventService;
 import com.notif.backend.service.UserService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import java.nio.charset.StandardCharsets;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -20,10 +24,12 @@ public class UserController {
 
     private final UserService userService;
     private final UserEventService userEventService;
+    private final ICalService icalService;
 
-    public UserController(UserService userService, UserEventService userEventService){
+    public UserController(UserService userService, UserEventService userEventService, ICalService icalService) {
         this.userService = userService;
         this.userEventService = userEventService;
+        this.icalService = icalService;
     }
 
     @PutMapping()
@@ -47,8 +53,14 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/events")
-    public List<EventDTO> getEventsForUser(@PathVariable Long userId) {
-        return userEventService.getEventsForUser(userId);
+    public ResponseEntity<List<EventDTO>> getEventsForUser(
+            @PathVariable Long userId,
+            @AuthenticationPrincipal Jwt jwt) {
+        UserDTO requester = userService.getOrCreateUser(jwt);
+        if (!requester.id().equals(userId)) {
+            return ResponseEntity.status(403).build();
+        }
+        return ResponseEntity.ok(userEventService.getEventsForUser(userId));
     }
 
     @PostMapping("/events")
@@ -77,9 +89,32 @@ public class UserController {
         return userEventService.getEventsForUser(user.id());
     }
 
+    @GetMapping("/events/export/ical")
+    public ResponseEntity<byte[]> exportEventsAsIcal(@AuthenticationPrincipal Jwt jwt) {
+        UserDTO user = userService.getOrCreateUser(jwt);
+        String icalContent = icalService.generate(userEventService.getEventsForUser(user.id()));
+
+        byte[] bytes = icalContent.getBytes(StandardCharsets.UTF_8);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/calendar; charset=utf-8"));
+        headers.setContentDispositionFormData("attachment", "concerts.ics");
+        headers.setContentLength(bytes.length);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(bytes);
+    }
+
     @GetMapping("/{userId}/profile")
-    public UserDTO getUserProfile(@PathVariable Long userId) {
-        return userService.getUserByID(userId);
+    public ResponseEntity<UserDTO> getUserProfile(
+            @PathVariable Long userId,
+            @AuthenticationPrincipal Jwt jwt) {
+        UserDTO requester = userService.getOrCreateUser(jwt);
+        if (!requester.id().equals(userId)) {
+            return ResponseEntity.status(403).build();
+        }
+        return ResponseEntity.ok(userService.getUserByID(userId));
     }
 
     @GetMapping("/sync")

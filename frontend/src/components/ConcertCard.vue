@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useCountdown } from '../composables/useCountdown'
 
 const props = defineProps({
@@ -10,6 +10,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['delete'])
+
+const showConfirm = ref(false)
 
 const dateTimeStr = computed(() => {
   if (!props.concert.date) return null
@@ -81,11 +83,16 @@ const ringDashoffset = computed(() =>
         <span class="concert-card__status" :class="{ past: countdown.expired }">
           {{ statusLabel }}
         </span>
+        <div v-if="showConfirm" class="concert-card__confirm">
+          <button type="button" class="concert-card__confirm-yes" @click="emit('delete', concert.id)">Delete</button>
+          <button type="button" class="concert-card__confirm-no" @click="showConfirm = false">Cancel</button>
+        </div>
         <button
+          v-else
           type="button"
           class="concert-card__delete"
           title="Remove from profile"
-          @click="emit('delete', concert.id)"
+          @click="showConfirm = true"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
             <polyline points="3 6 5 6 21 6"/>
@@ -199,6 +206,38 @@ const ringDashoffset = computed(() =>
 .concert-card__delete:hover {
   color: #f87171;
   background: rgba(248, 113, 113, 0.1);
+}
+
+.concert-card__confirm {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.concert-card__confirm-yes,
+.concert-card__confirm-no {
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.concert-card__confirm-yes {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+
+.concert-card__confirm-no {
+  background: var(--bg-surface-2);
+  color: var(--text-3);
+}
+
+.concert-card__confirm-yes:hover,
+.concert-card__confirm-no:hover {
+  opacity: 0.8;
 }
 
 .concert-card__status {

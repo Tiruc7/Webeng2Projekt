@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import keycloak from '../keycloak/keycloak.js'
 import { authState } from '../auth/authState.js'
+import { secureFetch } from '../api/api.js'
 
 const router = useRouter()
 const isOpen = ref(false)
@@ -69,6 +70,34 @@ async function navigate(item) {
   closeMenu()
 }
 
+const isExporting = ref(false)
+const exportError = ref('')
+
+async function exportToCalendar() {
+  isExporting.value = true
+  exportError.value = ''
+  try {
+    const response = await secureFetch('/api/user/events/export/ical')
+    if (!response.ok) throw new Error(`Export failed (${response.status})`)
+
+    // Trigger a file download via a temporary object URL
+    const blob = await response.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'concerts.ics'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  } catch (e) {
+    console.error('Calendar export failed:', e)
+    exportError.value = e.message || 'Export failed'
+  } finally {
+    isExporting.value = false
+  }
+}
+
 function handleClickOutside(event) {
   if (!menuRef.value) return
 
@@ -124,6 +153,18 @@ onUnmounted(() => {
       >
         {{ item.label }}
       </button>
+
+      <template v-if="authState.authenticated">
+        <button
+          type="button"
+          class="user-menu__button"
+          :disabled="isExporting"
+          @click="exportToCalendar"
+        >
+          {{ isExporting ? 'Exporting...' : 'Export to Calendar' }}
+        </button>
+        <p v-if="exportError" class="user-menu__error">{{ exportError }}</p>
+      </template>
     </div>
   </div>
 </template>
@@ -243,6 +284,14 @@ onUnmounted(() => {
   transform: none;
   background: var(--bg-surface-2);
   border-color: var(--border);
+}
+
+
+.user-menu__error {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #f87171;
+  padding: 0 0.25rem;
 }
 
 @media (max-width: 720px) {

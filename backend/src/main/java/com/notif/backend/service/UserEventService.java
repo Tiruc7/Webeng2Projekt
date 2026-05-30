@@ -48,21 +48,6 @@ public class UserEventService {
 
 
     @Transactional
-    public UserEventDTO register(Long userId, String eventId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EntityNotFoundException("Event not found"));
-
-        UserEvent connection = new UserEvent();
-        connection.setId(UUID.randomUUID().toString());
-        connection.setUser(user);
-        connection.setEvent(event);
-
-        return userEventRepository.save(connection).toDTO();
-    }
-
-    @Transactional
     public void removeEventFromUserProfile(Long userId, String eventId) {
         userEventRepository.deleteByUserAndEvent(userId, eventId);
         // Remove the event itself if no user has it saved anymore
