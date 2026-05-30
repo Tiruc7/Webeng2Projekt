@@ -33,14 +33,13 @@ public class EventController {
         return tmService.getRawEvents(keyword, city, size);
     }
 
-    //Zweiter Endpunkt locahost.../api/concerts
     @GetMapping("/api/events")
     public List<EventDTO> getEvents(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String city,
             @RequestParam(defaultValue = "3") int size
     ) {
-        return tmService.getEvents(keyword, city, size);
+        return tmService.getEvents(keyword, city, size, null, null);
     }
     @PostMapping("/sync")
     public Event syncEvent(@RequestBody EventDTO eventDTO) {
@@ -58,7 +57,7 @@ public class EventController {
             @RequestParam(required = false) String city,
             @RequestParam(defaultValue = "3") int size
     ) {
-        List<EventDTO> events = tmService.getEvents(keyword, city, size);
+        List<EventDTO> events = tmService.getEvents(keyword, city, size, null, null);
         return eventService.saveOrUpdateEvent(events);
     }
 

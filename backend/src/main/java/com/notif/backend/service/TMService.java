@@ -6,13 +6,20 @@ import com.notif.backend.dto.EventDTO;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.notif.backend.dto.SearchSuggestionDTO;
 import com.notif.backend.helper.TMQueryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 public class TMService {
+
+    private static final Logger log = LoggerFactory.getLogger(TMService.class);
+
     @Value("${ticketmaster.api.base-url}")
     private String baseUrl;
 
@@ -36,23 +43,20 @@ public class TMService {
         return restTemplate.getForObject(url, String.class);
     }
 
-    public List<EventDTO> getEvents(String keyword, String city, int size) {
-        //URL bauen mithilfe TMQueryBuilder Objekt
-        String url = tmQueryBuilder.buildSearchUrl(baseUrl, apiKey, keyword, city, size);
-        //RestTemplate sendet Request und nimmt Antwort zunächst als String in response
+    @Cacheable("events")
+    public List<EventDTO> getEvents(String keyword, String city, int size, String dateFrom, String dateTo) {
+        log.info("Ticketmaster API call: keyword={}, city={}, size={}, dateFrom={}, dateTo={}", keyword, city, size, dateFrom, dateTo);
+        String url = tmQueryBuilder.buildSearchUrl(baseUrl, apiKey, keyword, city, size, dateFrom, dateTo);
         String response = restTemplate.getForObject(url, String.class);
 
-        //Liste für später einzelne ConcertDTOs
         List<EventDTO> concerts = new ArrayList<>();
 
         try {
             JsonNode root = objectMapper.readTree(response);
-            //gehe in json knoten "events"
             JsonNode events = root.path("_embedded").path("events");
 
             if (events.isArray()) {
                 for (JsonNode event : events) {
-                    //Über path suchen, damit code bei leerem feld nicht abschmiert
                     String id = event.path("id").asText("");
                     String title = event.path("name").asText("");
                     String date = event.path("dates").path("start").path("localDate").asText("");
@@ -62,7 +66,6 @@ public class TMService {
                     String imageUrl = "";
                     JsonNode images = event.path("images");
                     if (images.isArray() && !images.isEmpty()) {
-                        //Wenn mehrere Bilder einfach das erste
                         imageUrl = images.get(0).path("url").asText("");
                     }
 
@@ -96,4 +99,21 @@ public class TMService {
         }
         return concerts;
     }
+
+    @Cacheable("suggestions")
+    public List<SearchSuggestionDTO> searchSuggestions(String keyword, String city, int size) {
+        List<EventDTO> events = getEvents(keyword, city, size, null, null);
+
+        return events.stream()
+                .map(event -> new SearchSuggestionDTO(
+                        event.id(),
+                        event.title(),
+                        event.venue(),
+                        event.city(),
+                        event.date(),
+                        event.time()
+                ))
+                .toList();
+    }
+
 }
