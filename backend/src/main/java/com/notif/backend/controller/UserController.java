@@ -51,6 +51,32 @@ public class UserController {
         return userEventService.getEventsForUser(userId);
     }
 
+    @PostMapping("/events")
+    public ResponseEntity<Void> saveEvent(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestBody EventDTO eventDTO
+    ) {
+        UserDTO user = userService.getOrCreateUser(jwt);
+        userEventService.addEventToUserProfile(user.id(), eventDTO);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/events/{eventId}")
+    public ResponseEntity<Void> deleteEvent(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String eventId
+    ) {
+        UserDTO user = userService.getOrCreateUser(jwt);
+        userEventService.removeEventFromUserProfile(user.id(), eventId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/events")
+    public List<EventDTO> getMyEvents(@AuthenticationPrincipal Jwt jwt) {
+        UserDTO user = userService.getOrCreateUser(jwt);
+        return userEventService.getEventsForUser(user.id());
+    }
+
     @GetMapping("/{userId}/profile")
     public UserDTO getUserProfile(@PathVariable Long userId) {
         return userService.getUserByID(userId);

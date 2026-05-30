@@ -6,7 +6,13 @@
         http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="03-01-seed-users" author="team" context="@dev">
+    <changeSet id="02-seed-test-data" author="team">
+        <!-- If User 1 or 2 already exist, Changeset skip -->
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM users WHERE id IN (1, 2)</sqlCheck>
+        </preConditions>
+
+        <!-- 2 Testuser -->
         <insert tableName="users">
             <column name="id" value="1"/>
             <column name="external_id" value="test-external-id-alice"/>
