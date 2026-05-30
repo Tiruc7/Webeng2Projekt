@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="04-friends-table" author="kat+claude">
+        <!-- Liquibase changeset -->
+        <createTable tableName="user_friendships">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="requester_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_friendship_requester"
+                             references="users(id)"/>
+            </column>
+            <column name="addressee_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_friendship_addressee"
+                             references="users(id)"/>
+            </column>
+            <column name="status" type="ENUM('PENDING', 'ACCEPTED', 'BLOCKED')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <!-- Prevent duplicate requests in either direction -->
+        <addUniqueConstraint tableName="user_friendships"
+                             columnNames="requester_id, addressee_id"/>
+    </changeSet>
+</databaseChangeLog>
