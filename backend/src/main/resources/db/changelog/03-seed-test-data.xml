@@ -6,7 +6,7 @@
         http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="02-seed-test-data" author="chatgpt">
+    <changeSet id="02-seed-test-data" author="team">
         <!-- If User 1 or 2 already exist, Changeset skip -->
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">SELECT COUNT(*) FROM users WHERE id IN (1, 2)</sqlCheck>
@@ -14,84 +14,128 @@
 
         <!-- 2 Testuser -->
         <insert tableName="users">
-            <column name="id" valueNumeric="1"/>
+            <column name="id" value="1"/>
+            <column name="external_id" value="test-external-id-alice"/>
             <column name="username" value="alice"/>
-            <column name="external_id" value="dummy-uuid-alice-123"/>
         </insert>
-
         <insert tableName="users">
-            <column name="id" valueNumeric="2"/>
+            <column name="id" value="2"/>
+            <column name="external_id" value="test-external-id-bob"/>
             <column name="username" value="bob"/>
-            <column name="external_id" value="dummy-uuid-bob-123"/>
         </insert>
+    </changeSet>
 
-        <!-- 6 Testevents -->
+    <changeSet id="03-02-seed-events" author="team" context="@dev">
         <insert tableName="events">
-            <column name="id" valueNumeric="101"/>
-            <column name="name" value="Metallica"/>
-        </insert>
-
-        <insert tableName="events">
-            <column name="id" valueNumeric="102"/>
-            <column name="name" value="Slipknot Night"/>
-        </insert>
-
-        <insert tableName="events">
-            <column name="id" valueNumeric="103"/>
-            <column name="name" value="Rammstein"/>
+            <column name="id" value="101"/>
+            <column name="name" value="Metallica Worldwired Berlin"/>
+            <column name="venue" value="Olympiastadion Berlin"/>
+            <column name="city" value="Berlin"/>
+            <column name="date" value="2026-08-14"/>
+            <column name="time" value="19:30"/>
+            <column name="image_url" value="https://example.com/images/metallica-berlin.jpg"/>
+            <column name="ticket_url" value="https://example.com/tickets/metallica-berlin"/>
+            <column name="status" value="upcoming"/>
         </insert>
 
         <insert tableName="events">
-            <column name="id" valueNumeric="104"/>
+            <column name="id" value="102"/>
+            <column name="name" value="Slipknot Night Hamburg"/>
+            <column name="venue" value="Barclays Arena"/>
+            <column name="city" value="Hamburg"/>
+            <column name="date" value="2026-09-03"/>
+            <column name="time" value="20:00"/>
+            <column name="image_url" value="https://example.com/images/slipknot-hamburg.jpg"/>
+            <column name="ticket_url" value="https://example.com/tickets/slipknot-hamburg"/>
+            <column name="status" value="upcoming"/>
+        </insert>
+
+        <insert tableName="events">
+            <column name="id" value="103"/>
+            <column name="name" value="Rammstein Stadium Show"/>
+            <column name="venue" value="Signal Iduna Park"/>
+            <column name="city" value="Dortmund"/>
+            <column name="date" value="2026-07-01"/>
+            <column name="time" value="20:30"/>
+            <column name="image_url" value="https://example.com/images/rammstein-dortmund.jpg"/>
+            <column name="ticket_url" value="https://example.com/tickets/rammstein-dortmund"/>
+            <column name="status" value="upcoming"/>
+        </insert>
+
+        <insert tableName="events">
+            <column name="id" value="104"/>
             <column name="name" value="Ghost Ritual Tour"/>
+            <column name="venue" value="Lanxess Arena"/>
+            <column name="city" value="Köln"/>
+            <column name="date" value="2026-10-12"/>
+            <column name="time" value="19:00"/>
+            <column name="image_url" value="https://example.com/images/ghost-koeln.jpg"/>
+            <column name="ticket_url" value="https://example.com/tickets/ghost-koeln"/>
+            <column name="status" value="upcoming"/>
         </insert>
 
         <insert tableName="events">
-            <column name="id" valueNumeric="105"/>
-            <column name="name" value="Sabaton"/>
+            <column name="id" value="105"/>
+            <column name="name" value="Sabaton Arena Event"/>
+            <column name="venue" value="SAP Arena"/>
+            <column name="city" value="Mannheim"/>
+            <column name="date" value="2026-11-05"/>
+            <column name="time" value="19:45"/>
+            <column name="image_url" value="https://example.com/images/sabaton-mannheim.jpg"/>
+            <column name="ticket_url" value="https://example.com/tickets/sabaton-mannheim"/>
+            <column name="status" value="upcoming"/>
         </insert>
 
         <insert tableName="events">
-            <column name="id" valueNumeric="106"/>
-            <column name="name" value="Electric Callboy"/>
+            <column name="id" value="106"/>
+            <column name="name" value="Electric Callboy Festival Slot"/>
+            <column name="venue" value="Messe Freiburg"/>
+            <column name="city" value="Freiburg"/>
+            <column name="date" value="2026-06-20"/>
+            <column name="time" value="18:15"/>
+            <column name="image_url" value="https://example.com/images/electric-callboy-freiburg.jpg"/>
+            <column name="ticket_url" value="https://example.com/tickets/electric-callboy-freiburg"/>
+            <column name="status" value="upcoming"/>
         </insert>
+    </changeSet>
 
         <!-- Alice gets 3 Events -->
         <insert tableName="user_events">
-            <column name="id" valueNumeric="1"/>
-            <column name="user_id" valueNumeric="1"/>
-            <column name="event_id" valueNumeric="101"/>
+            <column name="id" value="1"/>
+            <column name="user_id" value="1"/>
+            <column name="event_id" value="101"/>
         </insert>
 
         <insert tableName="user_events">
-            <column name="id" valueNumeric="2"/>
-            <column name="user_id" valueNumeric="1"/>
-            <column name="event_id" valueNumeric="102"/>
+            <column name="id" value="2"/>
+            <column name="user_id" value="1"/>
+            <column name="event_id" value="102"/>
         </insert>
 
         <insert tableName="user_events">
-            <column name="id" valueNumeric="3"/>
-            <column name="user_id" valueNumeric="1"/>
-            <column name="event_id" valueNumeric="103"/>
+            <column name="id" value="3"/>
+            <column name="user_id" value="1"/>
+            <column name="event_id" value="103"/>
         </insert>
 
         <!-- Bob gets 3 Events -->
         <insert tableName="user_events">
-            <column name="id" valueNumeric="4"/>
-            <column name="user_id" valueNumeric="2"/>
-            <column name="event_id" valueNumeric="104"/>
+            <column name="id" value="4"/>
+            <column name="user_id" value="2"/>
+            <column name="event_id" value="104"/>
         </insert>
 
         <insert tableName="user_events">
-            <column name="id" valueNumeric="5"/>
-            <column name="user_id" valueNumeric="2"/>
-            <column name="event_id" valueNumeric="105"/>
+            <column name="id" value="5"/>
+            <column name="user_id" value="2"/>
+            <column name="event_id" value="105"/>
         </insert>
 
         <insert tableName="user_events">
-            <column name="id" valueNumeric="6"/>
-            <column name="user_id" valueNumeric="2"/>
-            <column name="event_id" valueNumeric="106"/>
+            <column name="id" value="6"/>
+            <column name="user_id" value="2"/>
+            <column name="event_id" value="106"/>
         </insert>
     </changeSet>
+
 </databaseChangeLog>
