@@ -4,6 +4,8 @@ import com.notif.backend.dto.EventDTO;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -75,7 +77,7 @@ public class ICalService {
 
                 // Use LocalDateTime.plusHours so dates roll over correctly (e.g. 22:00 + 3h = 01:00 next day)
                 LocalDate date = LocalDate.parse(event.date());
-                LocalDateTime startDt = LocalDateTime.of(date, java.time.LocalTime.of(hour, minute));
+                LocalDateTime startDt = LocalDateTime.of(date, LocalTime.of(hour, minute));
                 LocalDateTime endDt   = startDt.plusHours(3);
 
                 String dtStart = startDt.format(DTSTAMP_FORMAT);
