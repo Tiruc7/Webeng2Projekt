@@ -5,6 +5,7 @@ import EventSearchPanel from '../components/EventSearchPanel.vue'
 import ConcertCard from '../components/ConcertCard.vue'
 import { authState } from '../auth/authState.js'
 import { secureFetch } from '../api/api.js'
+import ConcertCommentPopUp from '../components/ConcertCommentPopUp.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -50,7 +51,13 @@ async function deleteConcert(eventId) {
     loadSavedConcerts()
   }
 }
+  const selectedConcert = ref(null)
+  const showConcertCommentPopUp = ref(false)
 
+  function openComments(concert) {
+    selectedConcert.value = concert
+    showConcertCommentPopUp.value = true
+  }
 onMounted(loadSavedConcerts)
 
 watch(() => authState.authenticated, loadSavedConcerts)
@@ -78,6 +85,12 @@ watch(() => authState.authenticated, loadSavedConcerts)
         Saved concerts
       </button>
     </nav>
+      
+    <ConcertCommentPopUp
+      v-if="showConcertCommentPopUp && selectedConcert"
+      :concert="selectedConcert"
+      @close="showConcertCommentPopUp = false"
+    />
 
     <div v-show="activeTab === 'search'" class="tab-panel">
       <EventSearchPanel
@@ -96,6 +109,7 @@ watch(() => authState.authenticated, loadSavedConcerts)
           :key="concert.id"
           :concert="concert"
           @delete="deleteConcert"
+          @comments="openComments"
         />
       </div>
       <p v-else class="empty-hint">
