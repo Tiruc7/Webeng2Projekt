@@ -34,16 +34,12 @@ public class FriendshipService {
         userFrienshipRepository.save(friendship);
     }
 
-    public void respondToRequest(Long friendshipId, Long addresseeId, boolean accept) throws Exception {
+    public void respondToRequest(Long friendshipId, boolean accept) throws Exception {
         UserFriendship friendship = userFrienshipRepository.findById(friendshipId)
                 .orElseThrow(ChangeSetPersister.NotFoundException::new);
 
-        // Only the addressee can respond
-        if (!friendship.getAddressee().getId().equals(addresseeId))
-            throw new Exception("Not your request to respond to");
-
         friendship.setStatus(accept ? FriendshipStatus.ACCEPTED : null);
-        if (!accept) userFrienshipRepository.delete(friendship);  // decline = just delete the row
+        if (!accept) userFrienshipRepository.delete(friendship);
         else userFrienshipRepository.save(friendship);
     }
 }
