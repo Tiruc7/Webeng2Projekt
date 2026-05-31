@@ -32,13 +32,14 @@ public class TMService {
 
     private final TMQueryBuilder tmQueryBuilder;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     @Autowired @Lazy
     private TMService self;
 
-    public TMService(TMQueryBuilder tmQueryBuilder) {
+    public TMService(TMQueryBuilder tmQueryBuilder, RestTemplate restTemplate) {
         this.tmQueryBuilder = tmQueryBuilder;
+        this.restTemplate = restTemplate;
     }
 
     public String getRawEvents(String keyword, String city, int size) {
