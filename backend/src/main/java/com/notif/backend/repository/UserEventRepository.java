@@ -22,4 +22,6 @@ public interface UserEventRepository extends JpaRepository<UserEvent, String> {
     @Modifying(clearAutomatically = true)
     @Query("DELETE FROM UserEvent ue WHERE ue.user.id = :userId AND ue.event.id = :eventId")
     void deleteByUserAndEvent(@Param("userId") Long userId, @Param("eventId") String eventId);
+
+    boolean existsByUserIdAndEventId(Long userId, String eventId);
 }

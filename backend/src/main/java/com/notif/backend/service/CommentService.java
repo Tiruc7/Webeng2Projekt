@@ -34,6 +34,7 @@ public class CommentService {
     }
 
     public CommentDTO createComment(Long userId, String eventId, CreateCommentDTO dto) {
+        //Nur kommentieren wenn user event gespeichert hat
         boolean userSavedEvent = userEventRepository.existsByUserIdAndEventId(userId, eventId);
 
         if (!userSavedEvent) {
