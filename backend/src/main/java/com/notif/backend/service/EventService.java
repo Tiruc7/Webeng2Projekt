@@ -6,6 +6,8 @@ import com.notif.backend.entity.Event;
 import com.notif.backend.entity.UserEvent;
 import com.notif.backend.repository.EventRepository;
 import com.notif.backend.repository.UserEventRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,8 @@ import java.util.List;
 
 @Service
 public class EventService {
+
+    private static final Logger log = LoggerFactory.getLogger(EventService.class);
 
     private final EventRepository eventRepository;
 
@@ -25,6 +29,7 @@ public class EventService {
 
     @Transactional
     public Event saveOrUpdateEvent(EventDTO dto) {
+        log.debug("Upserting event {}", dto.id());
         Event event = eventRepository.findById(dto.id())
                 .orElse(new Event());
 

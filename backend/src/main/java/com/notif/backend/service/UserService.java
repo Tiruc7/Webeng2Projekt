@@ -4,6 +4,8 @@ import com.notif.backend.dto.UserDTO;
 import com.notif.backend.entity.User;
 import com.notif.backend.repository.UserEventRepository;
 import com.notif.backend.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,8 @@ import java.util.List;
 
 @Service
 public class UserService {
+
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
     private final UserEventRepository userEventRepository;
@@ -27,11 +31,13 @@ public class UserService {
 
     @Transactional
     public UserDTO updateUserData(UserDTO user) {
+        log.info("Updating user id={}", user.id());
         return userRepository.save(new User(user)).toDTO();
     }
 
     @Transactional
     public void deleteUserData(Long id) {
+        log.info("Deleting user id={}", id);
         userRepository.deleteById(id);
     }
 
@@ -50,7 +56,9 @@ public class UserService {
                     User newUser = new User();
                     newUser.setExternalId(externalId);
                     newUser.setUserName(username);
-                    return userRepository.save(newUser);
+                    User saved = userRepository.save(newUser);
+                    log.info("JIT provisioning: created new user externalId={}, username={}", externalId, username);
+                    return saved;
                 });
 
         return user.toDTO();

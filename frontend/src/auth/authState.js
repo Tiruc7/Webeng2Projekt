@@ -11,7 +11,15 @@ export const authState = reactive({
   userId: null,
 })
 
+let syncInProgress = null
+
 export async function syncAuthState() {
+  if (syncInProgress) return syncInProgress
+  syncInProgress = _doSync().finally(() => { syncInProgress = null })
+  return syncInProgress
+}
+
+async function _doSync() {
   authState.initialized = true
   authState.authenticated = !!keycloak.authenticated
 

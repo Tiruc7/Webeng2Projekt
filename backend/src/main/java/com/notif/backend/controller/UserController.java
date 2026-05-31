@@ -5,6 +5,8 @@ import com.notif.backend.dto.UserDTO;
 import com.notif.backend.service.ICalService;
 import com.notif.backend.service.UserEventService;
 import com.notif.backend.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -22,6 +24,8 @@ import java.util.List;
 @PreAuthorize("hasRole('USER')")
 public class UserController {
 
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
     private final UserService userService;
     private final UserEventService userEventService;
     private final ICalService icalService;
@@ -36,8 +40,9 @@ public class UserController {
     public ResponseEntity<UserDTO> updateUserData(@RequestBody UserDTO userDto) {
         try {
             UserDTO updated = userService.updateUserData(userDto);
-            return ResponseEntity.ok(updated); //Status 200
+            return ResponseEntity.ok(updated);
         } catch (Exception e) {
+            log.error("Failed to update user", e);
             return ResponseEntity.status(500).build();
         }
     }
@@ -48,6 +53,7 @@ public class UserController {
             userService.deleteUserData(userId);
             return new ResponseEntity<>(HttpStatusCode.valueOf(200));
         } catch (Exception e) {
+            log.error("Failed to delete user id={}", userId, e);
             return new ResponseEntity<>(HttpStatusCode.valueOf(500));
         }
     }
@@ -58,6 +64,7 @@ public class UserController {
             @AuthenticationPrincipal Jwt jwt) {
         UserDTO requester = userService.getOrCreateUser(jwt);
         if (!requester.id().equals(userId)) {
+            log.warn("Access denied: user {} tried to access events of user {}", requester.id(), userId);
             return ResponseEntity.status(403).build();
         }
         return ResponseEntity.ok(userEventService.getEventsForUser(userId));
@@ -112,6 +119,7 @@ public class UserController {
             @AuthenticationPrincipal Jwt jwt) {
         UserDTO requester = userService.getOrCreateUser(jwt);
         if (!requester.id().equals(userId)) {
+            log.warn("Access denied: user {} tried to access profile of user {}", requester.id(), userId);
             return ResponseEntity.status(403).build();
         }
         return ResponseEntity.ok(userService.getUserByID(userId));
@@ -119,8 +127,8 @@ public class UserController {
 
     @GetMapping("/sync")
     public ResponseEntity<UserDTO> syncLogin(@AuthenticationPrincipal Jwt jwt) {
-        // Ruft den Service auf, der getOrCreateUser implementiert
         UserDTO user = userService.getOrCreateUser(jwt);
+        log.info("User logged in: userId={}", user.id());
         return ResponseEntity.ok(user);
     }
 
