@@ -38,16 +38,15 @@ async function submitComment() {
   if (!newComment.value.trim()) return
 
   try {
-    const response = await fetch(`/api/events/${props.concert.id}/comments?userId=1`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        content: newComment.value,
-      }),
-    })
-
+    const response = await fetch(`/api/events/${props.concert.id}/comments?userId=3`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    content: newComment.value,
+  }),
+})
     if (!response.ok) {
       throw new Error('Kommentar konnte nicht gespeichert werden')
     }
@@ -64,25 +63,25 @@ onMounted(loadComments)
 </script>
 
 <template>
-  <div class="comment-modal__backdrop">
-    <div class="comment-modal">
-      <div class="comment-modal__header">
+  <div class="comment-popup__backdrop">
+    <div class="comment-popup">
+      <div class="comment-popup__header">
         <h2>Comments</h2>
         <button type="button" @click="emit('close')">×</button>
       </div>
 
-      <p class="comment-modal__event">
+      <p class="comment-popup__event">
         {{ concert.title }}
       </p>
 
       <p v-if="loading">Loading comments...</p>
-      <p v-if="error" class="comment-modal__error">{{ error }}</p>
+      <p v-if="error" class="comment-popup__error">{{ error }}</p>
 
-      <div class="comment-modal__list">
+      <div class="comment-popup__list">
         <div
           v-for="comment in comments"
           :key="comment.id"
-          class="comment-modal__item"
+          class="comment-popup__item"
         >
           <strong>{{ comment.username }}</strong>
           <p>{{ comment.content }}</p>
@@ -94,12 +93,11 @@ onMounted(loadComments)
         </p>
       </div>
 
-      <div class="comment-modal__form">
+      <div class="comment-popup__form">
         <textarea
           v-model="newComment"
           placeholder="Kommentar schreiben..."
         />
-
         <button type="button" @click="submitComment">
           Send
         </button>
@@ -109,7 +107,7 @@ onMounted(loadComments)
 </template>
 
 <style scoped>
-.comment-modal__backdrop {
+.comment-popup__backdrop {
   position: fixed;
   inset: 0;
   background: rgba(2, 6, 23, 0.72);
@@ -119,7 +117,7 @@ onMounted(loadComments)
   z-index: 50;
 }
 
-.comment-modal {
+.comment-popup {
   width: min(520px, 92vw);
   max-height: 80vh;
   overflow: auto;
@@ -130,18 +128,18 @@ onMounted(loadComments)
   box-shadow: var(--shadow-soft);
 }
 
-.comment-modal__header {
+.comment-popup__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.comment-modal__header h2 {
+.comment-popup__header h2 {
   margin: 0;
   color: var(--text-1);
 }
 
-.comment-modal__header button {
+.comment-popup__header button {
   background: transparent;
   border: none;
   color: var(--text-2);
@@ -149,45 +147,45 @@ onMounted(loadComments)
   cursor: pointer;
 }
 
-.comment-modal__event {
+.comment-popup__event {
   color: var(--text-2);
   margin-bottom: 1rem;
 }
 
-.comment-modal__list {
+.comment-popup__list {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
   margin: 1rem 0;
 }
 
-.comment-modal__item {
+.comment-popup__item {
   background: var(--bg-surface-2);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 0.8rem;
 }
 
-.comment-modal__item strong {
+.comment-popup__item strong {
   color: var(--text-1);
 }
 
-.comment-modal__item p {
+.comment-popup__item p {
   margin: 0.35rem 0;
   color: var(--text-2);
 }
 
-.comment-modal__item small {
+.comment-popup__item small {
   color: var(--text-3);
 }
 
-.comment-modal__form {
+.comment-popup__form {
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
 }
 
-.comment-modal__form textarea {
+.comment-popup__form textarea {
   min-height: 90px;
   resize: vertical;
   border-radius: 14px;
@@ -197,7 +195,7 @@ onMounted(loadComments)
   padding: 0.8rem;
 }
 
-.comment-modal__form button {
+.comment-popup__form button {
   align-self: flex-end;
   border: none;
   border-radius: 999px;
@@ -208,7 +206,7 @@ onMounted(loadComments)
   cursor: pointer;
 }
 
-.comment-modal__error {
+.comment-popup__error {
   color: #f87171;
 }
 </style>

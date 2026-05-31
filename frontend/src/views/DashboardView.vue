@@ -40,7 +40,35 @@ function onConcertSaved() {
   loadSavedConcerts()
   setTab('saved')
 }
+const newComment = ref('')
+const comments = ref([])
+const error = ref('')
 
+async function submitComment() {
+  if (!newComment.value.trim()) return
+
+  try {
+    const response = await fetch(`/api/events/${props.concert.id}/comments?userId=3`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        content: newComment.value,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error('Kommentar konnte nicht gespeichert werden')
+    }
+
+    const savedComment = await response.json()
+    comments.value.push(savedComment)
+    newComment.value = ''
+  } catch (err) {
+    error.value = err.message
+  }
+}
 async function deleteConcert(eventId) {
   concerts.value = concerts.value.filter(c => c.id !== eventId)
   try {
@@ -64,6 +92,7 @@ watch(() => authState.authenticated, loadSavedConcerts)
 </script>
 
 <template>
+  
   <section class="dashboard">
     <nav class="tabs" role="tablist">
       <button
