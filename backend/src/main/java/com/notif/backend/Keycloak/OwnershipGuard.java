@@ -38,4 +38,17 @@ public class OwnershipGuard {
                         || f.getAddressee().getId().equals(currentUserId))
                 .orElse(false);
     }
+
+    public boolean isFriendshipAddressee(Authentication auth, Long friendshipId) {
+        Long currentUserId = userHolder.getCurrentUser(auth).getId();
+        return userFriendshipRepository.findById(friendshipId).map(f ->  f.getAddressee().getId().equals(currentUserId))
+                .orElse(false);
+    }
+
+    public boolean isFriendOf(Authentication auth, Long userId) {
+        Long currentUserId = userHolder.getCurrentUser(auth).getId();
+        return userFriendshipRepository.findAcceptedFriendships(userId).stream()
+                .anyMatch(f -> f.getRequester().getId().equals(currentUserId)
+                        || f.getAddressee().getId().equals(currentUserId));
+    }
 }

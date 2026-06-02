@@ -8,7 +8,14 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface UserFriendshipRepository extends JpaRepository<UserFriendship, Long> {
-    boolean existsByUsers(Long requesterId, Long addresseeId);
+
+    @Query("""
+    SELECT COUNT(f) > 0 FROM UserFriendship f
+    WHERE (f.requester.id = :requesterId AND f.addressee.id = :addresseeId)
+       OR (f.requester.id = :addresseeId AND f.addressee.id = :requesterId)
+""")
+    boolean existsByUsers(@Param("requesterId") Long requesterId,
+                          @Param("addresseeId") Long addresseeId);
 
     @Query("""
     SELECT f FROM UserFriendship f
@@ -23,4 +30,6 @@ public interface UserFriendshipRepository extends JpaRepository<UserFriendship, 
     AND f.addressee.id = :userId
     """)
     List<UserFriendship> findPendingRequestsForAddressee(@Param("userId") Long userId);
+
+    boolean existsByAddressee_id(Long friendshipId);
 }

@@ -52,13 +52,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/events")
-    public ResponseEntity<List<EventDTO>> getEventsForUser(
-            @PathVariable Long userId,
-            @AuthenticationPrincipal Jwt jwt) {
-        UserDTO requester = userService.getOrCreateUser(jwt);
-        if (!requester.id().equals(userId)) {
-            return ResponseEntity.status(403).build();
-        }
+    @PreAuthorize("hasRole('ADMIN') or @guard.isUser(authentication, #userId) or @guard.isFriendOf(authentication, #userId)")
+    public ResponseEntity<List<EventDTO>> getEventsForUser(@PathVariable Long userId) {
         return ResponseEntity.ok(userEventService.getEventsForUser(userId));
     }
 
@@ -103,7 +98,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/profile")
-    @PreAuthorize("hasRole('ADMIN') or @guard.isUser(authentication, #userId)")
+    @PreAuthorize("hasRole('ADMIN') or @guard.isUser(authentication, #userId) or @guard.isFriendOf(authentication, #userId)")
     public ResponseEntity<UserDTO> getUserProfile(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.getUserByID(userId));
     }
