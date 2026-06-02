@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
-@PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class UserController {
 
     private final UserService userService;
@@ -71,8 +71,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/events/{userEventId}")
-    @PreAuthorize("@guard.ownsUserEvent(authentication, #userEventId)")
+    @DeleteMapping("/events/{eventId}")
     public ResponseEntity<Void> deleteEvent(@PathVariable String eventId, Authentication auth) {
         UserDTO user = userHolder.getCurrentUser(auth).toDTO();
         userEventService.removeEventFromUserProfile(user.id(), eventId);
