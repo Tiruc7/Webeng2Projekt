@@ -1,18 +1,20 @@
 package com.notif.backend.controller;
 
+import com.notif.backend.Keycloak.KeycloakUserHolder;
 import com.notif.backend.dto.EventDTO;
 import com.notif.backend.dto.UserDTO;
+import com.notif.backend.entity.User;
 import com.notif.backend.service.ICalService;
 import com.notif.backend.service.UserEventService;
 import com.notif.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import java.nio.charset.StandardCharsets;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
-@PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -29,33 +31,28 @@ public class UserController {
     private final UserService userService;
     private final UserEventService userEventService;
     private final ICalService icalService;
+    private final KeycloakUserHolder userHolder;
 
-    public UserController(UserService userService, UserEventService userEventService, ICalService icalService) {
+    public UserController(UserService userService, UserEventService userEventService, ICalService icalService, KeycloakUserHolder userHolder) {
         this.userService = userService;
         this.userEventService = userEventService;
         this.icalService = icalService;
+        this.userHolder = userHolder;
     }
 
-    @PutMapping()
-    public ResponseEntity<UserDTO> updateUserData(@RequestBody UserDTO userDto) {
-        try {
-            UserDTO updated = userService.updateUserData(userDto);
-            return ResponseEntity.ok(updated);
-        } catch (Exception e) {
-            log.error("Failed to update user", e);
-            return ResponseEntity.status(500).build();
-        }
+    @PutMapping("/{userId}")
+    @PreAuthorize("@guard.isUser(authentication, #userId)")
+    public ResponseEntity<UserDTO> updateUserData(
+            @PathVariable Long userId,
+            @RequestBody UserDTO userDto) {
+        return ResponseEntity.ok(userService.updateUserData(userDto));
     }
 
-    @DeleteMapping()
-    public ResponseEntity updateUserData(@RequestParam(value = "userId") Long userId) {
-        try {
-            userService.deleteUserData(userId);
-            return new ResponseEntity<>(HttpStatusCode.valueOf(200));
-        } catch (Exception e) {
-            log.error("Failed to delete user id={}", userId, e);
-            return new ResponseEntity<>(HttpStatusCode.valueOf(500));
-        }
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN') or @guard.isUser(authentication, #userId)")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+        userService.deleteUserData(userId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{userId}/events")
@@ -72,33 +69,29 @@ public class UserController {
 
     @PostMapping("/events")
     public ResponseEntity<Void> saveEvent(
-            @AuthenticationPrincipal Jwt jwt,
-            @RequestBody EventDTO eventDTO
-    ) {
-        UserDTO user = userService.getOrCreateUser(jwt);
-        userEventService.addEventToUserProfile(user.id(), eventDTO);
+            Authentication auth,
+            @RequestBody EventDTO eventDTO) {
+        User user = userHolder.getCurrentUser(auth);
+        userEventService.addEventToUserProfile(user.getId(), eventDTO);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/events/{eventId}")
-    public ResponseEntity<Void> deleteEvent(
-            @AuthenticationPrincipal Jwt jwt,
-            @PathVariable String eventId
-    ) {
-        UserDTO user = userService.getOrCreateUser(jwt);
+    public ResponseEntity<Void> deleteEvent(@PathVariable String eventId, Authentication auth) {
+        UserDTO user = userHolder.getCurrentUser(auth).toDTO();
         userEventService.removeEventFromUserProfile(user.id(), eventId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/events")
-    public List<EventDTO> getMyEvents(@AuthenticationPrincipal Jwt jwt) {
-        UserDTO user = userService.getOrCreateUser(jwt);
-        return userEventService.getEventsForUser(user.id());
+    public ResponseEntity<List<EventDTO>> getMyEvents(Authentication auth) {
+        User user = userHolder.getCurrentUser(auth);
+        return ResponseEntity.ok(userEventService.getEventsForUser(user.getId()));
     }
 
     @GetMapping("/events/export/ical")
-    public ResponseEntity<byte[]> exportEventsAsIcal(@AuthenticationPrincipal Jwt jwt) {
-        UserDTO user = userService.getOrCreateUser(jwt);
+    public ResponseEntity<byte[]> exportEventsAsIcal(Authentication auth) {
+        UserDTO user = userHolder.getCurrentUser(auth).toDTO();
         String icalContent = icalService.generate(userEventService.getEventsForUser(user.id()));
 
         byte[] bytes = icalContent.getBytes(StandardCharsets.UTF_8);
@@ -114,17 +107,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/profile")
-    public ResponseEntity<UserDTO> getUserProfile(
-            @PathVariable Long userId,
-            @AuthenticationPrincipal Jwt jwt) {
-        UserDTO requester = userService.getOrCreateUser(jwt);
-        if (!requester.id().equals(userId)) {
-            log.warn("Access denied: user {} tried to access profile of user {}", requester.id(), userId);
-            return ResponseEntity.status(403).build();
-        }
+    @PreAuthorize("hasRole('ADMIN') or @guard.isUser(authentication, #userId)")
+    public ResponseEntity<UserDTO> getUserProfile(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.getUserByID(userId));
     }
 
+    // Bootstrap endpoint. All other endpoints use userHolder.getCurrentUser(auth) instead.
     @GetMapping("/sync")
     public ResponseEntity<UserDTO> syncLogin(@AuthenticationPrincipal Jwt jwt) {
         UserDTO user = userService.getOrCreateUser(jwt);

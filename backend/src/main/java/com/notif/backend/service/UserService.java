@@ -2,7 +2,6 @@ package com.notif.backend.service;
 
 import com.notif.backend.dto.UserDTO;
 import com.notif.backend.entity.User;
-import com.notif.backend.repository.UserEventRepository;
 import com.notif.backend.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +17,9 @@ public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
-    private final UserEventRepository userEventRepository;
 
-    public UserService(UserRepository userRepository, UserEventRepository userEventRepository){
+    public UserService(UserRepository userRepository){
         this.userRepository = userRepository;
-        this.userEventRepository = userEventRepository;
     }
 
     public List<UserDTO> getUserData() {
@@ -52,7 +49,6 @@ public class UserService {
 
         User user = userRepository.findByExternalId(externalId)
                 .orElseGet(() -> {
-                    // JIT Provisioning: User existiert noch nicht in unserer DB
                     User newUser = new User();
                     newUser.setExternalId(externalId);
                     newUser.setUserName(username);
