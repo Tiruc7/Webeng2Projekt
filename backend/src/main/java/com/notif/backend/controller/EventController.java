@@ -62,7 +62,7 @@ public class EventController {
     }
 
     @GetMapping("/{eventId}/users")
-    @PreAuthorize("!hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserDTO> getEventsForUser(@PathVariable String eventId) {
         return userEventService.getUserForEvents(eventId);
     }
