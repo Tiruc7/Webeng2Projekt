@@ -22,7 +22,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserEvent> userEvents;
 
-    public User(){};
+    public User(){}
 
     public User(UserDTO user) {
         this.id = user.id();
