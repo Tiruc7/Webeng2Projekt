@@ -1,6 +1,7 @@
 package com.notif.backend.service;
 
 import com.notif.backend.dto.UserFriendshipDTO;
+import com.notif.backend.entity.User;
 import com.notif.backend.entity.UserFriendship;
 import com.notif.backend.enums.FriendshipStatus;
 import com.notif.backend.repository.UserFriendshipRepository;
@@ -27,13 +28,17 @@ public class FriendshipService {
         if (requesterId.equals(addresseeId))
             throw new IllegalArgumentException("Can't friend yourself");
 
-        // Check no relationship already exists in either direction
         boolean exists = userFriendshipRepository.existsByUsers(requesterId, addresseeId);
         if (exists) throw new Exception("Friendship already exists");
 
+        User requester = userRepository.findById(requesterId)
+                .orElseThrow(() -> new EntityNotFoundException("Requester not found"));
+        User addressee = userRepository.findById(addresseeId)
+                .orElseThrow(() -> new EntityNotFoundException("Addressee not found"));
+
         UserFriendship friendship = new UserFriendship();
-        friendship.setRequester(userRepository.getReferenceById(requesterId));
-        friendship.setAddressee(userRepository.getReferenceById(addresseeId));
+        friendship.setRequester(requester);
+        friendship.setAddressee(addressee);
         friendship.setStatus(FriendshipStatus.PENDING);
         userFriendshipRepository.save(friendship);
     }
