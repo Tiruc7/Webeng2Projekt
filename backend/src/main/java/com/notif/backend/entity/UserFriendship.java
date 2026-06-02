@@ -1,6 +1,7 @@
 package com.notif.backend.entity;
 
 
+import com.notif.backend.dto.UserFriendshipDTO;
 import com.notif.backend.enums.FriendshipStatus;
 import jakarta.persistence.*;
 
@@ -61,6 +62,16 @@ public class UserFriendship {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public UserFriendshipDTO toDTO(){
+        return new UserFriendshipDTO(
+                this.getId(),
+                this.getRequester().toDTO(),
+                this.getAddressee().toDTO(),
+                this.getStatus(),
+                this.getCreatedAt()
+        );
     }
 }
 
