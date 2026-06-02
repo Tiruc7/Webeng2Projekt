@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
-@PreAuthorize("!hasRole('USER')")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminDataController {
 
     private final UserEventService userEventService;

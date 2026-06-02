@@ -19,7 +19,12 @@ public class CustomKeycloakRoleConverter implements Converter<Jwt, Collection<Gr
             return Collections.emptyList();
         }
 
-        return ((List<String>) realmAccess.get("roles")).stream()
+        Object rolesObj = realmAccess.get("roles");
+        if (!(rolesObj instanceof List<?> roles)) {
+            return List.of();
+        }
+
+        return roles.stream()
                 .map(roleName -> "ROLE_" + roleName)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());

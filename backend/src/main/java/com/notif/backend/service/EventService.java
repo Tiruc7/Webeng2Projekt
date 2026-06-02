@@ -1,11 +1,8 @@
 package com.notif.backend.service;
 
 import com.notif.backend.dto.EventDTO;
-import com.notif.backend.dto.UserEventDTO;
 import com.notif.backend.entity.Event;
-import com.notif.backend.entity.UserEvent;
 import com.notif.backend.repository.EventRepository;
-import com.notif.backend.repository.UserEventRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +13,8 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
-    private final UserEventRepository userEventRepository;
-
-    public EventService(EventRepository eventRepository, UserEventRepository userEventRepository) {
+    public EventService(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
-        this.userEventRepository = userEventRepository;
     }
 
     @Transactional
