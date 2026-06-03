@@ -6,6 +6,8 @@ import com.notif.backend.dto.UserEventDTO;
 import com.notif.backend.service.EventService;
 import com.notif.backend.service.UserEventService;
 import com.notif.backend.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +22,8 @@ import java.util.List;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminDataController {
 
+    private static final Logger log = LoggerFactory.getLogger(AdminDataController.class);
+
     private final UserEventService userEventService;
     private final EventService eventService;
     private final UserService userService;
@@ -33,9 +37,11 @@ public class AdminDataController {
 
     @GetMapping(value = "/users")
     public ResponseEntity<List<UserDTO>> getUserData() {
+        log.info("Admin requested full user list");
         try {
             return new ResponseEntity<>(userService.getUserData(), HttpStatusCode.valueOf(200));
         } catch (Exception e) {
+            log.error("Failed to load user data for admin", e);
             return new ResponseEntity<>(HttpStatusCode.valueOf(500));
         }
     }

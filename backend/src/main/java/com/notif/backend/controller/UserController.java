@@ -7,6 +7,8 @@ import com.notif.backend.entity.User;
 import com.notif.backend.service.ICalService;
 import com.notif.backend.service.UserEventService;
 import com.notif.backend.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,8 @@ import java.util.List;
 @RequestMapping("/api/user")
 @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
 public class UserController {
+
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
     private final UserEventService userEventService;
@@ -57,6 +61,7 @@ public class UserController {
             @AuthenticationPrincipal Jwt jwt) {
         UserDTO requester = userService.getOrCreateUser(jwt);
         if (!requester.id().equals(userId)) {
+            log.warn("Access denied: user {} tried to access events of user {}", requester.id(), userId);
             return ResponseEntity.status(403).build();
         }
         return ResponseEntity.ok(userEventService.getEventsForUser(userId));
@@ -111,6 +116,7 @@ public class UserController {
     @GetMapping("/sync")
     public ResponseEntity<UserDTO> syncLogin(@AuthenticationPrincipal Jwt jwt) {
         UserDTO user = userService.getOrCreateUser(jwt);
+        log.info("User logged in: userId={}", user.id());
         return ResponseEntity.ok(user);
     }
 

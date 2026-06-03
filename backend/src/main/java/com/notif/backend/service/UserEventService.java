@@ -10,6 +10,8 @@ import com.notif.backend.repository.EventRepository;
 import com.notif.backend.repository.UserEventRepository;
 import com.notif.backend.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,8 @@ import java.util.UUID;
 
 @Service
 public class UserEventService {
+
+    private static final Logger log = LoggerFactory.getLogger(UserEventService.class);
 
     private final UserEventRepository userEventRepository;
     private final UserRepository userRepository;
@@ -49,15 +53,18 @@ public class UserEventService {
 
     @Transactional
     public void removeEventFromUserProfile(Long userId, String eventId) {
+        log.info("Removing event {} from profile of user {}", eventId, userId);
         userEventRepository.deleteByUserAndEvent(userId, eventId);
         // Remove the event itself if no user has it saved anymore
         if (!userEventRepository.existsByEvent_Id(eventId)) {
+            log.info("Event {} has no remaining owners, deleting from DB", eventId);
             eventRepository.deleteById(eventId);
         }
     }
 
     @Transactional
     public void addEventToUserProfile(Long userId, com.notif.backend.dto.EventDTO eventDTO) {
+        log.info("Adding event {} to profile of user {}", eventDTO.id(), userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
@@ -76,6 +83,7 @@ public class UserEventService {
 
         // No duplicate entries for same user-event combination
         if (userEventRepository.existsByUser_IdAndEvent_Id(userId, event.getId())) {
+            log.debug("Event {} already saved for user {}, skipping", event.getId(), userId);
             return;
         }
 

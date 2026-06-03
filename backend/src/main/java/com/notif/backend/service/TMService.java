@@ -42,8 +42,8 @@ public class TMService {
     }
 
     public String getRawEvents(String keyword, String city, int size) {
+        log.debug("Fetching raw events: keyword={}, city={}, size={}", keyword, city, size);
         String url = tmQueryBuilder.buildSearchUrl(baseUrl, apiKey, keyword, city, size);
-        System.out.println("Ticketmaster URL: " + url);
         return restTemplate.getForObject(url, String.class);
     }
 
@@ -99,8 +99,10 @@ public class TMService {
             }
 
         } catch (Exception e) {
+            log.error("Failed to parse Ticketmaster response", e);
             throw new RuntimeException("Failed to parse Ticketmaster response", e);
         }
+        log.debug("Parsed {} events from Ticketmaster response", concerts.size());
         return concerts;
     }
 
