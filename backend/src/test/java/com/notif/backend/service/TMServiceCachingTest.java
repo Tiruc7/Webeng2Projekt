@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.web.client.RestTemplate;
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.*;
         "ticketmaster.api.base-url=http://test",
         "ticketmaster.api.key=testkey"
 })
+@SuppressWarnings("null")
 class TMServiceCachingTest {
 
     @Configuration
@@ -46,8 +48,8 @@ class TMServiceCachingTest {
         }
 
         @Bean
-        TMService tmService(TMQueryBuilder q, RestTemplate rt) {
-            return new TMService(q, rt);
+        TMService tmService(TMQueryBuilder q, RestTemplate rt, @Lazy TMService self) {
+            return new TMService(q, rt, self);
         }
     }
 

@@ -5,12 +5,12 @@ import com.notif.backend.dto.EventDTO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.notif.backend.dto.SearchSuggestionDTO;
 import com.notif.backend.helper.TMQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
@@ -34,12 +34,12 @@ public class TMService {
 
     private final RestTemplate restTemplate;
 
-    @Autowired @Lazy
-    private TMService self;
+    private final TMService self;
 
-    public TMService(TMQueryBuilder tmQueryBuilder, RestTemplate restTemplate) {
+    public TMService(TMQueryBuilder tmQueryBuilder, RestTemplate restTemplate, @Lazy TMService self) {
         this.tmQueryBuilder = tmQueryBuilder;
         this.restTemplate = restTemplate;
+        this.self = self;
     }
 
     public String getRawEvents(String keyword, String city, int size) {
@@ -62,7 +62,7 @@ public class TMService {
 
             if (events.isArray()) {
                 for (JsonNode event : events) {
-                    String id = event.path("id").asText("");
+                    String id = Objects.requireNonNull(event.path("id").asText(""));
                     String title = event.path("name").asText("");
                     String date = event.path("dates").path("start").path("localDate").asText("");
                     String time = event.path("dates").path("start").path("localTime").asText("");

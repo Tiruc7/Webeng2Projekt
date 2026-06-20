@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="06-seed-data-realism-fix" author="claude" context="@dev">
+
+        <update tableName="users">
+            <column name="external_id" value="09870202-f5f1-49e3-bcff-3160a7d8bb41"/>
+            <column name="username" value="user"/>
+            <where>id = 1</where>
+        </update>
+        <update tableName="users">
+            <column name="external_id" value="bc5c1cb3-de69-4dd0-bc6a-e563376f22ba"/>
+            <column name="username" value="test"/>
+            <where>id = 2</where>
+        </update>
+
+        <delete tableName="comments">
+            <where>event_id IN ('101', '102', '103', '104', '105', '106')</where>
+        </delete>
+        <delete tableName="user_events">
+            <where>id IN ('1', '2', '3', '4', '5', '6')</where>
+        </delete>
+        <delete tableName="events">
+            <where>id IN ('101', '102', '103', '104', '105', '106')</where>
+        </delete>
+
+        <insert tableName="events">
+            <column name="id" value="101"/>
+            <column name="name" value="Metallica Worldwired Berlin"/>
+            <column name="venue" value="Olympiastadion Berlin"/>
+            <column name="city" value="Berlin"/>
+            <column name="date" valueComputed="DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 18 DAY), '%Y-%m-%d')"/>
+            <column name="time" value="19:30:00"/>
+            <column name="image_url" value="https://placehold.co/600x400/0d0d0d/e5197d?text=Metallica"/>
+            <column name="ticket_url" value="https://www.ticketmaster.de"/>
+            <column name="status" value="onsale"/>
+        </insert>
+        <insert tableName="events">
+            <column name="id" value="102"/>
+            <column name="name" value="Slipknot Night Hamburg"/>
+            <column name="venue" value="Barclays Arena"/>
+            <column name="city" value="Hamburg"/>
+            <column name="date" valueComputed="DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 33 DAY), '%Y-%m-%d')"/>
+            <column name="time" value="20:00:00"/>
+            <column name="image_url" value="https://placehold.co/600x400/0d0d0d/1e45c0?text=Slipknot"/>
+            <column name="ticket_url" value="https://www.ticketmaster.de"/>
+            <column name="status" value="onsale"/>
+        </insert>
+        <insert tableName="events">
+            <column name="id" value="103"/>
+            <column name="name" value="Rammstein Stadium Show"/>
+            <column name="venue" value="Signal Iduna Park"/>
+            <column name="city" value="Dortmund"/>
+            <column name="date" valueComputed="DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 47 DAY), '%Y-%m-%d')"/>
+            <column name="time" value="20:30:00"/>
+            <column name="image_url" value="https://placehold.co/600x400/0d0d0d/e5197d?text=Rammstein"/>
+            <column name="ticket_url" value="https://www.ticketmaster.de"/>
+            <column name="status" value="onsale"/>
+        </insert>
+        <insert tableName="events">
+            <column name="id" value="104"/>
+            <column name="name" value="Ghost Ritual Tour"/>
+            <column name="venue" value="Lanxess Arena"/>
+            <column name="city" value="Koeln"/>
+            <column name="date" valueComputed="DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 61 DAY), '%Y-%m-%d')"/>
+            <column name="time" value="19:00:00"/>
+            <column name="image_url" value="https://placehold.co/600x400/0d0d0d/1e45c0?text=Ghost"/>
+            <column name="ticket_url" value="https://www.ticketmaster.de"/>
+            <column name="status" value="onsale"/>
+        </insert>
+        <insert tableName="events">
+            <column name="id" value="105"/>
+            <column name="name" value="Sabaton Arena Event"/>
+            <column name="venue" value="SAP Arena"/>
+            <column name="city" value="Mannheim"/>
+            <column name="date" valueComputed="DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 76 DAY), '%Y-%m-%d')"/>
+            <column name="time" value="19:45:00"/>
+            <column name="image_url" value="https://placehold.co/600x400/0d0d0d/e5197d?text=Sabaton"/>
+            <column name="ticket_url" value="https://www.ticketmaster.de"/>
+            <column name="status" value="onsale"/>
+        </insert>
+        <insert tableName="events">
+            <column name="id" value="106"/>
+            <column name="name" value="Electric Callboy Festival Slot"/>
+            <column name="venue" value="Messe Freiburg"/>
+            <column name="city" value="Freiburg"/>
+            <column name="date" valueComputed="DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL 90 DAY), '%Y-%m-%d')"/>
+            <column name="time" value="18:15:00"/>
+            <column name="image_url" value="https://placehold.co/600x400/0d0d0d/1e45c0?text=Electric+Callboy"/>
+            <column name="ticket_url" value="https://www.ticketmaster.de"/>
+            <column name="status" value="onsale"/>
+        </insert>
+
+        <insert tableName="user_events">
+            <column name="id" value="1"/>
+            <column name="user_id" value="1"/>
+            <column name="event_id" value="101"/>
+        </insert>
+        <insert tableName="user_events">
+            <column name="id" value="2"/>
+            <column name="user_id" value="1"/>
+            <column name="event_id" value="102"/>
+        </insert>
+        <insert tableName="user_events">
+            <column name="id" value="3"/>
+            <column name="user_id" value="1"/>
+            <column name="event_id" value="103"/>
+        </insert>
+        <insert tableName="user_events">
+            <column name="id" value="4"/>
+            <column name="user_id" value="2"/>
+            <column name="event_id" value="104"/>
+        </insert>
+        <insert tableName="user_events">
+            <column name="id" value="5"/>
+            <column name="user_id" value="2"/>
+            <column name="event_id" value="105"/>
+        </insert>
+        <insert tableName="user_events">
+            <column name="id" value="6"/>
+            <column name="user_id" value="2"/>
+            <column name="event_id" value="106"/>
+        </insert>
+
+    </changeSet>
+</databaseChangeLog>

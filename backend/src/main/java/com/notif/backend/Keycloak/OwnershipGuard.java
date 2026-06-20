@@ -2,6 +2,7 @@ package com.notif.backend.Keycloak;
 
 import com.notif.backend.repository.UserEventRepository;
 import com.notif.backend.repository.UserFriendshipRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,7 @@ public class OwnershipGuard {
         return userHolder.getCurrentUser(auth).getId().equals(userId);
     }
 
-    public boolean ownsUserEvent(Authentication auth, String userEventId) {
+    public boolean ownsUserEvent(Authentication auth, @NonNull String userEventId) {
         return userEventRepo.findById(userEventId)
                 .map(ue -> {
                     Long currentUserId = userHolder.getCurrentUser(auth).getId();
@@ -31,7 +32,7 @@ public class OwnershipGuard {
                 .orElse(false);
     }
 
-    public boolean isFriendshipParticipant(Authentication auth, Long friendshipId) {
+    public boolean isFriendshipParticipant(Authentication auth, @NonNull Long friendshipId) {
         Long currentUserId = userHolder.getCurrentUser(auth).getId();
         return userFriendshipRepository.findById(friendshipId)
                 .map(f -> f.getRequester().getId().equals(currentUserId)
@@ -39,7 +40,7 @@ public class OwnershipGuard {
                 .orElse(false);
     }
 
-    public boolean isFriendshipAddressee(Authentication auth, Long friendshipId) {
+    public boolean isFriendshipAddressee(Authentication auth, @NonNull Long friendshipId) {
         Long currentUserId = userHolder.getCurrentUser(auth).getId();
         return userFriendshipRepository.findById(friendshipId).map(f ->  f.getAddressee().getId().equals(currentUserId))
                 .orElse(false);
