@@ -1,9 +1,80 @@
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: eventplanner_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: event_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
   redis:
     image: redis:7-alpine
-    container_name: redis_dev
+    container_name: eventplanner_redis
     ports:
       - "6379:6379"
     volumes:
-      - ./redis_data:/data
+      - redis_data:/data
     command: redis-server --appendonly yes
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.6.1
+    container_name: eventplanner_keycloak
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_DB: dev-file
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+    volumes:
+      - ./Keycloak/imports:/opt/keycloak/data/import
+      - keycloak_data:/opt/keycloak/data
+    ports:
+      - "8080:8080"
+    command: start-dev --import-realm
+
+  backend:
+    build: ./backend
+    container_name: eventplanner_backend
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: event_db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KC_HOST: localhost
+      KC_INTERNAL_HOST: keycloak
+      KC_PORT: 8080
+      KC_REALM: EventKC
+      TMKey: ${TMKey}
+    ports:
+      - "8090:8090"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      keycloak:
+        condition: service_started
+    restart: on-failure
+
+  frontend:
+    build: ./frontend
+    container_name: eventplanner_frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
+  redis_data:
+  keycloak_data:
