@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { secureFetch } from '../api/api.js'
 
 const props = defineProps({
   concert: {
@@ -38,15 +39,12 @@ async function submitComment() {
   if (!newComment.value.trim()) return
 
   try {
-    const response = await fetch(`/api/events/${props.concert.id}/comments?userId=3`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    content: newComment.value,
-  }),
-})
+    const response = await secureFetch(`/api/events/${props.concert.id}/comments`, {
+      method: 'POST',
+      body: JSON.stringify({
+        content: newComment.value,
+      }),
+    })
     if (!response.ok) {
       throw new Error('Kommentar konnte nicht gespeichert werden')
     }

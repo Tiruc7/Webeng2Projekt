@@ -26,7 +26,6 @@ public class CacheConfig {
         // NON_FINAL would skip records because records are implicitly final in Java,
         // causing deserialization to fail with MismatchedInputException.
         // AS.PROPERTY stores @class as a JSON field instead of an array wrapper,
-        // which is more robust with nested types.
         om.activateDefaultTyping(
                 BasicPolymorphicTypeValidator.builder()
                         .allowIfSubType(Object.class)
