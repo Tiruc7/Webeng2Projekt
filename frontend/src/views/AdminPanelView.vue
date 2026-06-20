@@ -87,15 +87,11 @@ async function loadUserEvents() {
 
     <div class="admin-panel__tabs">
       <button class="admin-tab" @click="openSection('users')">
-        User Management
+        User List
       </button>
 
       <button class="admin-tab" @click="openSection('events')">
-        Event Management
-      </button>
-
-      <button class="admin-tab" @click="openSection('userEvents')">
-        API Settings
+        Event List
       </button>
     </div>
 
@@ -134,7 +130,7 @@ async function loadUserEvents() {
           <tbody>
             <tr v-for="event in events" :key="event.id">
               <td>{{ event.id }}</td>
-              <td>{{ event.name }}</td>
+              <td>{{ event.title }}</td>
             </tr>
           </tbody>
         </table>
