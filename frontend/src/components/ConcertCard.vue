@@ -9,7 +9,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['delete'])
+const emit = defineEmits(['delete', 'comments'])
 
 const showConfirm = ref(false)
 
@@ -78,17 +78,29 @@ const ringDashoffset = computed(() =>
     />
     <div v-else class="concert-card__image concert-card__image--placeholder" />
 
-    <div class="concert-card__body">
-      <div class="concert-card__header">
-        <span class="concert-card__status" :class="{ past: countdown.expired }">
-          {{ statusLabel }}
-        </span>
-        <div v-if="showConfirm" class="concert-card__confirm">
-          <button type="button" class="concert-card__confirm-yes" @click="emit('delete', concert.id)">Delete</button>
-          <button type="button" class="concert-card__confirm-no" @click="showConfirm = false">Cancel</button>
-        </div>
+<div class="concert-card__body">
+  <div class="concert-card__header">
+    <span class="concert-card__status" :class="{ past: countdown.expired }">
+      {{ statusLabel }}
+    </span>
+
+    <div class="concert-card__actions">
+      <div v-if="showConfirm" class="concert-card__confirm">
+        <button type="button" class="concert-card__confirm-yes" @click="emit('delete', concert.id)">Delete</button>
+        <button type="button" class="concert-card__confirm-no" @click="showConfirm = false">Cancel</button>
+      </div>
+
+      <template v-else>
         <button
-          v-else
+          type="button"
+          class="concert-card__comment"
+          title="Show comments"
+          @click="emit('comments', concert)"
+        >
+          Comments
+        </button>
+
+        <button
           type="button"
           class="concert-card__delete"
           title="Remove from profile"
@@ -101,11 +113,13 @@ const ringDashoffset = computed(() =>
             <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
           </svg>
         </button>
-      </div>
+      </template>
+    </div>
+  </div>
 
-      <h3 class="concert-card__title">{{ concert.title }}</h3>
-      <p class="concert-card__venue">{{ concert.venue }} · {{ concert.city }}</p>
-      <p class="concert-card__date">{{ formattedDate }}</p>
+  <h3 class="concert-card__title">{{ concert.title }}</h3>
+  <p class="concert-card__venue">{{ concert.venue }} · {{ concert.city }}</p>
+  <p class="concert-card__date">{{ formattedDate }}</p>
 
       <div class="concert-card__ring-wrap">
         <svg
@@ -329,4 +343,27 @@ const ringDashoffset = computed(() =>
   color: var(--text-3);
   margin-top: 0.1rem;
 }
+
+.concert-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.concert-card__comment {
+  border: 1px solid var(--border);
+  background: var(--bg-surface-2);
+  color: var(--text-2);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.concert-card__comment:hover {
+  color: var(--text-1);
+  border-color: rgba(37, 99, 235, 0.5);
+}
+
 </style>

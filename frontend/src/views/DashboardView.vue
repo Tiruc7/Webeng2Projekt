@@ -5,6 +5,7 @@ import EventSearchPanel from '../components/EventSearchPanel.vue'
 import ConcertCard from '../components/ConcertCard.vue'
 import { authState } from '../auth/authState.js'
 import { secureFetch } from '../api/api.js'
+import ConcertCommentPopUp from '../components/ConcertCommentPopUp.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -39,7 +40,35 @@ function onConcertSaved() {
   loadSavedConcerts()
   setTab('saved')
 }
+const newComment = ref('')
+const comments = ref([])
+const error = ref('')
 
+async function submitComment() {
+  if (!newComment.value.trim()) return
+
+  try {
+    const response = await fetch(`/api/events/${props.concert.id}/comments?userId=3`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        content: newComment.value,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error('Kommentar konnte nicht gespeichert werden')
+    }
+
+    const savedComment = await response.json()
+    comments.value.push(savedComment)
+    newComment.value = ''
+  } catch (err) {
+    error.value = err.message
+  }
+}
 async function deleteConcert(eventId) {
   concerts.value = concerts.value.filter(c => c.id !== eventId)
   try {
@@ -50,13 +79,20 @@ async function deleteConcert(eventId) {
     loadSavedConcerts()
   }
 }
+  const selectedConcert = ref(null)
+  const showConcertCommentPopUp = ref(false)
 
+  function openComments(concert) {
+    selectedConcert.value = concert
+    showConcertCommentPopUp.value = true
+  }
 onMounted(loadSavedConcerts)
 
 watch(() => authState.authenticated, loadSavedConcerts)
 </script>
 
 <template>
+  
   <section class="dashboard">
     <nav class="tabs" role="tablist">
       <button
@@ -78,6 +114,12 @@ watch(() => authState.authenticated, loadSavedConcerts)
         Saved concerts
       </button>
     </nav>
+      
+    <ConcertCommentPopUp
+      v-if="showConcertCommentPopUp && selectedConcert"
+      :concert="selectedConcert"
+      @close="showConcertCommentPopUp = false"
+    />
 
     <div v-show="activeTab === 'search'" class="tab-panel">
       <EventSearchPanel
@@ -96,6 +138,7 @@ watch(() => authState.authenticated, loadSavedConcerts)
           :key="concert.id"
           :concert="concert"
           @delete="deleteConcert"
+          @comments="openComments"
         />
       </div>
       <p v-else class="empty-hint">

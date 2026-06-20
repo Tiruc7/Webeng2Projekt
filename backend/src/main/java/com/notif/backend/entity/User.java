@@ -66,4 +66,7 @@ public class User {
         return new UserDTO(this.id,this.userName,this.externalId);
     }
 
+    public String getUsername() {
+        return userName;
+    }
 }
