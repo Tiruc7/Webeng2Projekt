@@ -73,9 +73,5 @@ public class UserFriendship {
                 this.getCreatedAt()
         );
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 }
 
