@@ -5,11 +5,13 @@ import com.notif.backend.dto.UserFriendshipDTO;
 import com.notif.backend.entity.User;
 import com.notif.backend.service.FriendshipService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/friends")
@@ -28,10 +30,10 @@ public class UserFriendController {
     // Send a friend request to another user
     @PostMapping("/request/{addresseeId}")
     public ResponseEntity<Void> sendRequest(
-            @PathVariable Long addresseeId,
+            @PathVariable @NonNull Long addresseeId,
             Authentication auth) throws Exception {
         User requester = userHolder.getCurrentUser(auth);
-        friendshipService.sendRequest(requester.getId(), addresseeId);
+        friendshipService.sendRequest(Objects.requireNonNull(requester.getId()), addresseeId);
         return ResponseEntity.ok().build();
     }
 
@@ -39,7 +41,7 @@ public class UserFriendController {
     @PutMapping("/{friendshipId}/respond")
     @PreAuthorize("@guard.isFriendshipAddressee(authentication, #friendshipId)")
     public ResponseEntity<Void> respondToRequest(
-            @PathVariable Long friendshipId,
+            @PathVariable @NonNull Long friendshipId,
             @RequestParam boolean accept,
             Authentication auth) throws Exception {
         friendshipService.respondToRequest(friendshipId, accept);
@@ -62,7 +64,7 @@ public class UserFriendController {
 
     @DeleteMapping("/{friendshipId}")
     @PreAuthorize("hasRole('ADMIN') or @guard.isFriendshipParticipant(authentication, #friendshipId)")
-    public ResponseEntity<Void> deleteFriendship(@PathVariable Long friendshipId) {
+    public ResponseEntity<Void> deleteFriendship(@PathVariable @NonNull Long friendshipId) {
         friendshipService.deleteFriendship(friendshipId);
         return ResponseEntity.noContent().build();
     }

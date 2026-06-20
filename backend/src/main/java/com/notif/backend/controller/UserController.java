@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import java.nio.charset.StandardCharsets;
+import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/user")
@@ -50,7 +52,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasRole('ADMIN') or @guard.isUser(authentication, #userId)")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
+    public ResponseEntity<Void> deleteUser(@PathVariable @NonNull Long userId) {
         userService.deleteUserData(userId);
         return ResponseEntity.noContent().build();
     }
@@ -66,12 +68,12 @@ public class UserController {
             Authentication auth,
             @RequestBody EventDTO eventDTO) {
         User user = userHolder.getCurrentUser(auth);
-        userEventService.addEventToUserProfile(user.getId(), eventDTO);
+        userEventService.addEventToUserProfile(Objects.requireNonNull(user.getId()), eventDTO);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/events/{eventId}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable String eventId, Authentication auth) {
+    public ResponseEntity<Void> deleteEvent(@PathVariable @NonNull String eventId, Authentication auth) {
         UserDTO user = userHolder.getCurrentUser(auth).toDTO();
         userEventService.removeEventFromUserProfile(user.id(), eventId);
         return ResponseEntity.noContent().build();
@@ -102,7 +104,7 @@ public class UserController {
 
     @GetMapping("/{userId}/profile")
     @PreAuthorize("hasRole('ADMIN') or @guard.isUser(authentication, #userId) or @guard.isFriendOf(authentication, #userId)")
-    public ResponseEntity<UserDTO> getUserProfile(@PathVariable Long userId) {
+    public ResponseEntity<UserDTO> getUserProfile(@PathVariable @NonNull Long userId) {
         return ResponseEntity.ok(userService.getUserByID(userId));
     }
 
