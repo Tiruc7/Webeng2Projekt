@@ -24,6 +24,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+
+@SuppressWarnings("null")
 class FriendshipServiceTest {
 
     @Mock UserFriendshipRepository userFriendshipRepository;

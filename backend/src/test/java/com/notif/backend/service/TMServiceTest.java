@@ -17,6 +17,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+// Mockito matchers (any(), eq()) are unannotated generics from a third-party library,
+// so the null checker can't prove they satisfy RestTemplate's @NonNull parameters.
+@SuppressWarnings("null")
 class TMServiceTest {
 
     @Mock TMQueryBuilder tmQueryBuilder;
@@ -49,7 +52,8 @@ class TMServiceTest {
 
     @BeforeEach
     void setup() {
-        service = new TMService(tmQueryBuilder, restTemplate);
+        // self-reference only used by searchSuggestions(), not exercised in this test class
+        service = new TMService(tmQueryBuilder, restTemplate, null);
         // URL value is irrelevant; lenient so tests that don't use the builder don't fail
         lenient().when(tmQueryBuilder.buildSearchUrl(any(), any(), any(), any(), anyInt(), any(), any()))
                  .thenReturn("http://test");

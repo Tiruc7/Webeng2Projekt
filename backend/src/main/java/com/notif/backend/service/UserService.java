@@ -5,6 +5,7 @@ import com.notif.backend.entity.User;
 import com.notif.backend.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,12 +34,12 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUserData(Long id) {
+    public void deleteUserData(@NonNull Long id) {
         log.info("Deleting user id={}", id);
         userRepository.deleteById(id);
     }
 
-    public UserDTO getUserByID(Long userId) {
+    public UserDTO getUserByID(@NonNull Long userId) {
         return userRepository.getReferenceById(userId).toDTO();
     }
 

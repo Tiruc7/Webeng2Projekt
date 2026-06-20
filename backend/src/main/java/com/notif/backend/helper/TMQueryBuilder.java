@@ -1,17 +1,21 @@
 package com.notif.backend.helper;
 
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 @Component
 public class TMQueryBuilder {
 
+    @NonNull
     public String buildSearchUrl(String baseUrl, String apiKey, String keyword, String city, int size) {
         return buildSearchUrl(baseUrl, apiKey, keyword, city, size, null, null);
     }
 
+    @NonNull
     public String buildSearchUrl(String baseUrl, String apiKey, String keyword, String city, int size,
                                   String dateFrom, String dateTo) {
         StringBuilder url = new StringBuilder();
@@ -41,7 +45,7 @@ public class TMQueryBuilder {
             url.append("&endDateTime=").append(dateTo).append("T23:59:59Z");
         }
 
-        return url.toString();
+        return Objects.requireNonNull(url.toString());
     }
 
     private String encode(String value) {

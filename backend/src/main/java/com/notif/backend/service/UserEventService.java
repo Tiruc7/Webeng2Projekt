@@ -12,6 +12,7 @@ import com.notif.backend.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +44,7 @@ public class UserEventService {
                 .toList();
     }
 
-    public List<UserDTO> getUserForEvents(String eventId) {
+    public List<UserDTO> getUserForEvents(@NonNull String eventId) {
         return userEventRepository.findAllByEvent_Id(eventId)
                 .stream()
                 .map(u -> u.getUser().toDTO())
@@ -52,7 +53,7 @@ public class UserEventService {
 
 
     @Transactional
-    public void removeEventFromUserProfile(Long userId, String eventId) {
+    public void removeEventFromUserProfile(Long userId, @NonNull String eventId) {
         log.info("Removing event {} from profile of user {}", eventId, userId);
         userEventRepository.deleteByUserAndEvent(userId, eventId);
         // Remove the event itself if no user has it saved anymore
@@ -63,7 +64,7 @@ public class UserEventService {
     }
 
     @Transactional
-    public void addEventToUserProfile(Long userId, com.notif.backend.dto.EventDTO eventDTO) {
+    public void addEventToUserProfile(@NonNull Long userId, com.notif.backend.dto.EventDTO eventDTO) {
         log.info("Adding event {} to profile of user {}", eventDTO.id(), userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));

@@ -6,6 +6,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "events")
 public class Event {
@@ -116,7 +118,7 @@ public class Event {
     }
 
     public EventDTO toDTO(){
-        return new EventDTO(id, name, venue, city, date, time,
+        return new EventDTO(Objects.requireNonNull(id), name, venue, city, date, time,
                 imageUrl, ticketUrl, status);
     }
 

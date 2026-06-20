@@ -6,7 +6,6 @@ import com.notif.backend.entity.UserFriendship;
 import com.notif.backend.enums.FriendshipStatus;
 import com.notif.backend.repository.UserEventRepository;
 import com.notif.backend.repository.UserFriendshipRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

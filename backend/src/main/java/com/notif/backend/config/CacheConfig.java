@@ -11,40 +11,43 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.lang.NonNull;
 
 import java.time.Duration;
+import java.util.Objects;
 
 @Configuration
 @EnableCaching
 public class CacheConfig {
 
+    @NonNull
+    private static final Duration TTL = Objects.requireNonNull(Duration.ofDays(5));
+
     @Bean
+    @NonNull
     public RedisCacheConfiguration defaultCacheConfig() {
-        ObjectMapper om = new ObjectMapper();
+        // WRAPPER_ARRAY (instead of the default PROPERTY) typing is required because cached
+        // values are Lists (e.g. List<EventDTO>): PROPERTY can only attach a type id inside a
+        // JSON object, not on a bare JSON array root, so reading a cached list back. WRAPPER_ARRAY wraps any value, including array roots.
+        @SuppressWarnings("deprecation")
+        ObjectMapper.DefaultTyping typing = ObjectMapper.DefaultTyping.EVERYTHING;
 
-        // EVERYTHING: includes final classes (records like EventDTO) in type metadata.
-        // NON_FINAL would skip records because records are implicitly final in Java,
-        // causing deserialization to fail with MismatchedInputException.
-        // AS.PROPERTY stores @class as a JSON field instead of an array wrapper,
-        om.activateDefaultTyping(
-                BasicPolymorphicTypeValidator.builder()
-                        .allowIfSubType(Object.class)
-                        .build(),
-                ObjectMapper.DefaultTyping.EVERYTHING,
-                JsonTypeInfo.As.PROPERTY
-        );
-
-        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(om);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.activateDefaultTyping(
+                BasicPolymorphicTypeValidator.builder().allowIfSubType(Object.class).build(),
+                typing,
+                JsonTypeInfo.As.WRAPPER_ARRAY);
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(mapper);
 
         return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofDays(5))
+                .entryTtl(TTL)
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(serializer)
                 );
     }
 
     @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
+    public RedisCacheManager cacheManager(@NonNull RedisConnectionFactory factory) {
         return RedisCacheManager.builder(factory)
                 .cacheDefaults(defaultCacheConfig())
                 .build();
