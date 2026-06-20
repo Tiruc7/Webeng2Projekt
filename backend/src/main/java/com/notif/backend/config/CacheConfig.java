@@ -1,5 +1,8 @@
 package com.notif.backend.config;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,9 +26,15 @@ public class CacheConfig {
     @Bean
     @NonNull
     public RedisCacheConfiguration defaultCacheConfig() {
-        // Default constructor activates default typing for every type (including final
-        // classes/records like EventDTO) and stores it as an "@class" JSON property,
-        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
+        // WRAPPER_ARRAY (instead of the default PROPERTY) typing is required because cached
+        // values are Lists (e.g. List<EventDTO>): PROPERTY can only attach a type id inside a
+        // JSON object, not on a bare JSON array root, so reading a cached list back. WRAPPER_ARRAY wraps any value, including array roots.
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.activateDefaultTyping(
+                BasicPolymorphicTypeValidator.builder().allowIfSubType(Object.class).build(),
+                ObjectMapper.DefaultTyping.EVERYTHING,
+                JsonTypeInfo.As.WRAPPER_ARRAY);
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(mapper);
 
         return RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(TTL)

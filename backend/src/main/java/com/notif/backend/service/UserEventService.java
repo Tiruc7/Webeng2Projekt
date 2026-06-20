@@ -53,7 +53,7 @@ public class UserEventService {
 
 
     @Transactional
-    public void removeEventFromUserProfile(Long userId, String eventId) {
+    public void removeEventFromUserProfile(Long userId, @NonNull String eventId) {
         log.info("Removing event {} from profile of user {}", eventId, userId);
         userEventRepository.deleteByUserAndEvent(userId, eventId);
         // Remove the event itself if no user has it saved anymore

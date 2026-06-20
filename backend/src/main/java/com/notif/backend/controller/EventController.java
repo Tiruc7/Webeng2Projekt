@@ -6,6 +6,7 @@ import com.notif.backend.entity.Event;
 import com.notif.backend.service.EventService;
 import com.notif.backend.service.TMService;
 import com.notif.backend.service.UserEventService;
+import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,7 +64,7 @@ public class EventController {
 
     @GetMapping("/{eventId}/users")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserDTO> getEventsForUser(@PathVariable String eventId) {
+    public List<UserDTO> getEventsForUser(@PathVariable @NonNull String eventId) {
         return userEventService.getUserForEvents(eventId);
     }
 }

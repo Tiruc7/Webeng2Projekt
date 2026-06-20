@@ -1,4 +1,3 @@
 **/node_modules/
 redis_data/
 Keycloak/keycloak_data/
-.env
