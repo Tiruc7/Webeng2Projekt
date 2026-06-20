@@ -1,6 +1,9 @@
 package com.notif.backend.dto;
+
+import org.springframework.lang.NonNull;
+
 public record EventDTO(
-        String id,
+        @NonNull String id,
         String title,
         String venue,
         String city,

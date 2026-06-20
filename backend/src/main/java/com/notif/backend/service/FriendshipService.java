@@ -8,9 +8,11 @@ import com.notif.backend.repository.UserFriendshipRepository;
 import com.notif.backend.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FriendshipService {
@@ -24,7 +26,7 @@ public class FriendshipService {
         this.userRepository = userRepository;
     }
 
-    public void sendRequest(Long requesterId, Long addresseeId) throws Exception {
+    public void sendRequest(@NonNull Long requesterId, @NonNull Long addresseeId) throws Exception {
         if (requesterId.equals(addresseeId))
             throw new IllegalArgumentException("Can't friend yourself");
 
@@ -43,9 +45,9 @@ public class FriendshipService {
         userFriendshipRepository.save(friendship);
     }
 
-    public void respondToRequest(Long friendshipId, boolean accept) throws Exception {
-        UserFriendship friendship = userFriendshipRepository.findById(friendshipId)
-                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+    public void respondToRequest(@NonNull Long friendshipId, boolean accept) throws Exception {
+        UserFriendship friendship = Objects.requireNonNull(userFriendshipRepository.findById(friendshipId)
+                .orElseThrow(ChangeSetPersister.NotFoundException::new));
 
         friendship.setStatus(accept ? FriendshipStatus.ACCEPTED : null);
         if (!accept) userFriendshipRepository.delete(friendship);
@@ -66,9 +68,9 @@ public class FriendshipService {
                 .toList();
     }
 
-    public void deleteFriendship(Long friendshipId) {
-        UserFriendship friendship = userFriendshipRepository.findById(friendshipId)
-                .orElseThrow(() -> new EntityNotFoundException("Friendship not found"));
+    public void deleteFriendship(@NonNull Long friendshipId) {
+        UserFriendship friendship = Objects.requireNonNull(userFriendshipRepository.findById(friendshipId)
+                .orElseThrow(() -> new EntityNotFoundException("Friendship not found")));
         userFriendshipRepository.delete(friendship);
     }
 }

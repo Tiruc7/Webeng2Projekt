@@ -2,7 +2,6 @@ package com.notif.backend.service;
 
 import com.notif.backend.dto.UserDTO;
 import com.notif.backend.entity.User;
-import com.notif.backend.repository.UserEventRepository;
 import com.notif.backend.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,10 +17,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+
+@SuppressWarnings("null")
 class UserServiceTest {
 
-    @Mock UserRepository      userRepository;
-    @Mock UserEventRepository userEventRepository;
+    @Mock UserRepository userRepository;
 
     @InjectMocks UserService service;
 

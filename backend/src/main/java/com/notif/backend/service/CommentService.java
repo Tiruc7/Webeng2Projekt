@@ -9,6 +9,7 @@ import com.notif.backend.repository.CommentRepository;
 import com.notif.backend.repository.EventRepository;
 import com.notif.backend.repository.UserEventRepository;
 import com.notif.backend.repository.UserRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class CommentService {
         this.userEventRepository = userEventRepository;
     }
 
-    public CommentDTO createComment(Long userId, String eventId, CreateCommentDTO dto) {
+    public CommentDTO createComment(@NonNull Long userId, @NonNull String eventId, CreateCommentDTO dto) {
         //Nur kommentieren wenn user event gespeichert hat
         boolean userSavedEvent = userEventRepository.existsByUserIdAndEventId(userId, eventId);
 
