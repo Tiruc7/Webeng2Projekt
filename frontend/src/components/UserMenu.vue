@@ -127,7 +127,7 @@ onUnmounted(() => {
       <div class="user-menu__avatar">{{ avatarLetter }}</div>
 
       <div class="user-menu__text">
-        <span class="user-menu__title">ConcertOrganizer</span>
+        <span class="user-menu__title">EventPlanner</span>
         <span
           class="user-menu__subtitle"
           :class="{
