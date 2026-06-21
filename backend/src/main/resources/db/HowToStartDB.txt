@@ -1,5 +1,0 @@
-Database starten mit
-docker run --name mysql-dev -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=event_db -p 3307:3307 -d mysql:8.0
-mit der mysql workbench können die Tabellen eingesehen werden.
-Für Änderungen an der DB struktur oder initialen Einträgen, ein .sql oder ein .xml file in dem changelog order erstellen.
-Diese Datei dient der internen erklärung und sollte vor abgabe gelöscht werden.
